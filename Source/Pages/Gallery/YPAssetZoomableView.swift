@@ -136,6 +136,10 @@ final class YPAssetZoomableView: UIScrollView {
 
             strongSelf.squaredZoomScale = strongSelf.calculateSquaredZoomScale()
             
+            if YPConfig.library.onlySquare {
+                strongSelf.fitImage(true, animated: false)
+            }
+            
             completion(isLowResIntermediaryImage)
         }
     }
