@@ -41,7 +41,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     }()
     private let trimmerView: TrimmerView = {
         let v = TrimmerView()
-        v.mainColor = YPConfig.colors.trimmerMainColor
+        v.mainColor = YPConfig.colors.customGray40
         v.handleColor = YPConfig.colors.trimmerHandleColor
         v.positionBarColor = YPConfig.colors.positionLineColor
         v.maxDuration = YPConfig.video.trimmerMaxDuration
@@ -54,16 +54,16 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         v.isHidden = true
         return v
     }()
-    private lazy var trimBottomItem: YPMenuItem = {
+    private let trimBottomItem: YPMenuItem = {
         let v = YPMenuItem()
         v.textLabel.text = YPConfig.wordings.trim
-        v.button.addTarget(self, action: #selector(selectTrim), for: .touchUpInside)
+        v.button.addTarget(YPVideoFiltersVC.self, action: #selector(selectTrim), for: .touchUpInside)
         return v
     }()
-    private lazy var coverBottomItem: YPMenuItem = {
+    private let coverBottomItem: YPMenuItem = {
         let v = YPMenuItem()
         v.textLabel.text = YPConfig.wordings.cover
-        v.button.addTarget(self, action: #selector(selectCover), for: .touchUpInside)
+        v.button.addTarget(YPVideoFiltersVC.self, action: #selector(selectCover), for: .touchUpInside)
         return v
     }()
     private let videoView: YPVideoView = {
@@ -76,6 +76,25 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         v.isHidden = true
         return v
     }()
+    
+    // FLUV
+    private let bottomLine: UIView = {
+        let v = UIView()
+        v.backgroundColor = YPConfig.colors.customGray40
+        return v
+    }()
+    
+    private let selectionTrim: UIView = {
+        let v = UIView()
+        v.backgroundColor = YPConfig.colors.customGray80
+        return v
+    }()
+
+    private let selectionCover: UIView = {
+        let v = UIView()
+        v.backgroundColor = YPConfig.colors.customGray80
+        return v
+    }()
 
     // MARK: - Live cycle
 
@@ -84,7 +103,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
 
         setupLayout()
         title = YPConfig.wordings.trim
-        view.backgroundColor = YPConfig.colors.filterBackgroundColor
+        view.backgroundColor = YPConfig.colors.customBackground
         setupNavigationBar(isFromSelectionVC: self.isFromSelectionVC)
 
         // Remove the default and add a notification to repeat playback from the start
@@ -93,7 +112,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
             .addObserver(self,
                          selector: #selector(itemDidFinishPlaying(_:)),
                          name: .AVPlayerItemDidPlayToEndTime,
-                         object: videoView.player.currentItem)
+                         object: nil)
         
         // Set initial video cover
         imageGenerator = AVAssetImageGenerator(asset: self.inputAsset)
@@ -127,11 +146,15 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
 
     private func setupNavigationBar(isFromSelectionVC: Bool) {
         if isFromSelectionVC {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(title: YPConfig.wordings.cancel,
+            navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "btn_close_24px"),
                                                                style: .plain,
                                                                target: self,
                                                                action: #selector(cancel))
-            navigationItem.leftBarButtonItem?.setFont(font: YPConfig.fonts.leftBarButtonFont, forState: .normal)
+        } else {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "btn_back_24px"),
+                                                               style: .plain,
+                                                               target: self,
+                                                               action: #selector(back))
         }
         setupRightBarButtonItem()
     }
@@ -158,7 +181,21 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
             )
         )
 
-        trimBottomItem.leading(0).height(40)
+        bottomLine.height(1.0/UIScreen.main.scale)
+        bottomLine.Bottom == trimBottomItem.Top
+        bottomLine.fillHorizontally()
+        
+        selectionTrim.height(2)
+        selectionTrim.Bottom == trimBottomItem.Top
+        selectionTrim.Leading == view.Leading
+        selectionTrim.Trailing == selectionCover.Leading
+        selectionCover.height(2)
+        selectionCover.Bottom == trimBottomItem.Top
+        selectionCover.trailing(0)
+        selectionCover.isHidden = true
+        equal(sizes: selectionTrim, selectionCover)
+
+        trimBottomItem.leading(0).height(48)
         trimBottomItem.Bottom == view.safeAreaLayoutGuide.Bottom
         trimBottomItem.Trailing == coverBottomItem.Leading
         coverBottomItem.Bottom == view.safeAreaLayoutGuide.Bottom
@@ -166,16 +203,18 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         equal(sizes: trimBottomItem, coverBottomItem)
 
         videoView.heightEqualsWidth().fillHorizontally().top(0)
-        videoView.Bottom == trimmerContainerView.Top
+//        videoView.Bottom == trimmerContainerView.Top
 
         coverImageView.followEdges(videoView)
 
+        trimmerContainerView.backgroundColor = .clear
         trimmerContainerView.fillHorizontally()
-        trimmerContainerView.Top == videoView.Bottom
-        trimmerContainerView.Bottom == trimBottomItem.Top
+//        trimmerContainerView.Top == videoView.Bottom
+        trimmerContainerView.Bottom == trimBottomItem.Top - 40
+        trimmerContainerView.height(60)
 
         trimmerView.fillHorizontally(padding: 30).centerVertically()
-        trimmerView.Height == trimmerContainerView.Height / 3
+        trimmerView.Height == trimmerContainerView.Height
 
         coverThumbSelectorView.followEdges(trimmerView)
     }
@@ -206,8 +245,8 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
                     DispatchQueue.main.async {
                         if let coverImage = self?.coverImageView.image {
                             let resultVideo = YPMediaVideo(thumbnail: coverImage,
-														   videoURL: destinationURL,
-														   asset: self?.inputVideo.asset)
+                                                           videoURL: destinationURL,
+                                                           asset: self?.inputVideo.asset)
                             didSave(YPMediaItem.video(v: resultVideo))
                             self?.setupRightBarButtonItem()
                         } else {
@@ -228,11 +267,16 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     @objc private func cancel() {
         didCancel?()
     }
+    
+    @objc private func back() {
+        self.navigationController?.popViewController(animated: true)
+    }
 
     // MARK: - Bottom buttons
 
     @objc private func selectTrim() {
-        title = YPConfig.wordings.trim
+        selectionTrim.isHidden = false
+        selectionCover.isHidden = true
         
         trimBottomItem.select()
         coverBottomItem.deselect()
@@ -244,7 +288,8 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     }
     
     @objc private func selectCover() {
-        title = YPConfig.wordings.cover
+        selectionTrim.isHidden = true
+        selectionCover.isHidden = false
         
         trimBottomItem.deselect()
         coverBottomItem.select()

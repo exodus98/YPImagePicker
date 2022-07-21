@@ -82,15 +82,20 @@ final class YPAssetViewContainer: UIView {
             // Crop Button
             squareCropButton.setImage(YPConfig.icons.cropIcon, for: .normal)
             subviews(squareCropButton)
-            squareCropButton.size(42)
-            |-15-squareCropButton
-            squareCropButton.Bottom == self.Bottom - 15
+            squareCropButton.size(28).trailing(20)
+            squareCropButton.Bottom == self.Bottom - 20
         }
 
         // Multiple selection button
         subviews(multipleSelectionButton)
-        multipleSelectionButton.size(42).trailing(15)
-        multipleSelectionButton.Bottom == self.Bottom - 15
+        if onlySquare {
+            multipleSelectionButton.size(28).trailing(20)
+            multipleSelectionButton.Bottom == self.Bottom - 20
+        }
+        else {
+            multipleSelectionButton.size(28).trailing(58)
+            multipleSelectionButton.Bottom == self.Bottom - 20
+        }
     }
 
     required init?(coder: NSCoder) {
@@ -101,32 +106,32 @@ final class YPAssetViewContainer: UIView {
 
     // MARK: - Square button
 
-    @objc public func squareCropButtonTapped() {
+    @objc public func squareCropButtonTapped(_ animated:Bool = true) {
         let z = zoomableView.zoomScale
         shouldCropToSquare = (z >= 1 && z < zoomableView.squaredZoomScale)
-        zoomableView.fitImage(shouldCropToSquare, animated: true)
+        zoomableView.fitImage(shouldCropToSquare, animated: animated)
     }
 
     /// Update only UI of square crop button.
     public func updateSquareCropButtonState() {
         guard !isMultipleSelectionEnabled else {
             // If multiple selection enabled, the squareCropButton is not visible
-            squareCropButton.isHidden = true
+//            squareCropButton.isHidden = true
             return
         }
         guard !onlySquare else {
             // If only square enabled, than the squareCropButton is not visible
-            squareCropButton.isHidden = true
+//            squareCropButton.isHidden = true
             return
         }
         guard let selectedAssetImage = zoomableView.assetImageView.image else {
             // If no selected asset, than the squareCropButton is not visible
-            squareCropButton.isHidden = true
+//            squareCropButton.isHidden = true
             return
         }
 
         let isImageASquare = selectedAssetImage.size.width == selectedAssetImage.size.height
-        squareCropButton.isHidden = isImageASquare
+//        squareCropButton.isHidden = isImageASquare
     }
     
     // MARK: - Multiple selection

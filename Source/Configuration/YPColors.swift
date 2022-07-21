@@ -83,4 +83,11 @@ public struct YPColors {
     public var albumTintColor: UIColor = .ypLabel
     /// The color of the Album's title color
     public var albumTitleColor: UIColor = .ypLabel
+    
+    //custom user color
+    public var customGray40: UIColor = .lightGray
+    
+    public var customGray80: UIColor = .darkGray
+    
+    public var customBackground: UIColor = .white
 }

@@ -47,7 +47,7 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
     open override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = YPConfig.colors.safeAreaBackgroundColor
+        view.backgroundColor = YPConfig.colors.customBackground
         
         delegate = self
         
@@ -90,14 +90,9 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
                 if let libraryVC = libraryVC {
                     vcs.append(libraryVC)
                 }
-            case .photo:
-                if let cameraVC = cameraVC {
-                    vcs.append(cameraVC)
-                }
-            case .video:
-                if let videoVC = videoVC {
-                    vcs.append(videoVC)
-                }
+            //촬영이 필요하지 않으므로 스크롤링에서 추가하지 않는다
+            default:
+                break
             }
         }
         controllers = vcs
@@ -272,7 +267,7 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
     func updateUI() {
         if !YPConfig.hidesCancelButton {
             // Update Nav Bar state.
-            navigationItem.leftBarButtonItem = UIBarButtonItem(title: YPConfig.wordings.cancel,
+            navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "btn_close_24px"),
                                                                style: .plain,
                                                                target: self,
                                                                action: #selector(close))

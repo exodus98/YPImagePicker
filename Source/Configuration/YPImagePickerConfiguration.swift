@@ -20,11 +20,11 @@ public struct YPImagePickerConfiguration {
     public static var widthOniPad: CGFloat = -1
     
     public static var screenWidth: CGFloat {
-		var screenWidth: CGFloat = UIScreen.main.bounds.width
-		if UIDevice.current.userInterfaceIdiom == .pad && YPImagePickerConfiguration.widthOniPad > 0 {
-			screenWidth =  YPImagePickerConfiguration.widthOniPad
-		}
-		return screenWidth
+        var screenWidth: CGFloat = UIScreen.main.bounds.width
+        if UIDevice.current.userInterfaceIdiom == .pad && YPImagePickerConfiguration.widthOniPad > 0 {
+            screenWidth =  YPImagePickerConfiguration.widthOniPad
+        }
+        return screenWidth
     }
 
     /// If don't want to have logs from picker, set it to false.
@@ -138,7 +138,9 @@ public struct YPImagePickerConfiguration {
         YPFilter(name: "Sepia", coreImageFilterName: "CISepiaTone"),
         YPFilter(name: "XRay", coreImageFilterName: "CIXRay")
         ]
-    
+    ///Bongjin custom
+    ///Libarary View's Ration. Default is 1.0 . if 0.5, height become width's 50%
+    public var libraryViewRatio: CGFloat = 1.0
     /// Migration
     
     @available(iOS, obsoleted: 3.0.0, renamed: "video.compression")
@@ -193,7 +195,7 @@ public struct YPConfigLibrary {
     /// Sets the cropping style to square or not. Ignored if `onlySquare` is true. Defaults to true.
     public var isSquareByDefault = true
     
-	/// Minimum width, to prevent selectiong too high images. Have sense if onlySquare is true and the image is portrait.
+    /// Minimum width, to prevent selectiong too high images. Have sense if onlySquare is true and the image is portrait.
     public var minWidthForItem: CGFloat?
     
     /// Choose what media types are available in the library. Defaults to `.photo`.

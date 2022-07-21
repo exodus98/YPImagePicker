@@ -176,6 +176,10 @@ extension YPLibraryVC: UICollectionViewDelegate {
             collectionView.scrollToItem(at: indexPath, at: .top, animated: true)
         }
         v.refreshImageCurtainAlpha()
+        
+        if YPConfig.library.onlySquare {
+            self.v.assetViewContainer.squareCropButtonTapped(false)
+        }
             
         if isMultipleSelectionEnabled {
             let cellIsInTheSelectionPool = isInSelectionPool(indexPath: indexPath)
