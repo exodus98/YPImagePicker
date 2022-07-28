@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/parkboo/PryntTrimmerView",
       "state" : {
-        "branch" : "master",
-        "revision" : "b7b6572f8a90279e8483845788ccc7fc1bfaa276"
+        "revision" : "b7b6572f8a90279e8483845788ccc7fc1bfaa276",
+        "version" : "4.0.4"
       }
     },
     {
