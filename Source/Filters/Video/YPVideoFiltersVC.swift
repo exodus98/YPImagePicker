@@ -57,13 +57,13 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     private let trimBottomItem: YPMenuItem = {
         let v = YPMenuItem()
         v.textLabel.text = YPConfig.wordings.trim
-        v.button.addTarget(YPVideoFiltersVC.self, action: #selector(selectTrim), for: .touchUpInside)
+        v.button.addTarget(self, action: #selector(selectTrim), for: .touchUpInside)
         return v
     }()
     private let coverBottomItem: YPMenuItem = {
         let v = YPMenuItem()
         v.textLabel.text = YPConfig.wordings.cover
-        v.button.addTarget(YPVideoFiltersVC.self, action: #selector(selectCover), for: .touchUpInside)
+        v.button.addTarget(self, action: #selector(selectCover), for: .touchUpInside)
         return v
     }()
     private let videoView: YPVideoView = {
