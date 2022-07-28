@@ -86,7 +86,7 @@ public struct YPColors {
     
     // MARK: - FLUV
     /// 탭 위 구분선
-    public var trimmerTabLineCOlor: UIColor = .systemGray5
+    public var trimmerTabLineCOlor: UIColor = .lightGray
     /// 탭 선택색
     public var trimmerTabSelected: UIColor = .systemGray
 }
