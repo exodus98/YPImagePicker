@@ -57,6 +57,7 @@
 		99CF6D2B201CB96700487F77 /* YPVideoCaptureHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99CF6D2A201CB96700487F77 /* YPVideoCaptureHelper.swift */; };
 		99D1DC2B1F9788930047F0E0 /* YPImagePickerConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99D1DC2A1F9788930047F0E0 /* YPImagePickerConfiguration.swift */; };
 		AA69BCF222E601D100FBB925 /* YPDeviceOrientationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA69BCF122E601D100FBB925 /* YPDeviceOrientationHelper.swift */; };
+		C1959BA72892565E004D1488 /* PryntTrimmerView in Frameworks */ = {isa = PBXBuildFile; productRef = C1959BA62892565E004D1488 /* PryntTrimmerView */; };
 		EB05F6E7214A7191002040AA /* YPVideoProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB05F6E6214A7191002040AA /* YPVideoProcessor.swift */; };
 		EB1AB2EA20AC1DED00BFA79F /* CGFloat+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1AB2E920AC1DED00BFA79F /* CGFloat+Extensions.swift */; };
 		EB473E17208E192800D16105 /* URL+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB473E16208E192800D16105 /* URL+Extensions.swift */; };
@@ -345,6 +346,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C1959BA72892565E004D1488 /* PryntTrimmerView in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -353,7 +355,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				EBA37BCD26F75BCC005DAAD4 /* Stevia in Frameworks */,
-				4065C8B92887CBD500343177 /* PryntTrimmerView in Frameworks */,
 				4500082B3B62CA66D64563BC /* Pods_Example.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -679,6 +680,9 @@
 			dependencies = (
 			);
 			name = YPImagePicker;
+			packageProductDependencies = (
+				C1959BA62892565E004D1488 /* PryntTrimmerView */,
+			);
 			productName = Fusuma;
 			productReference = 52412A931CA6114A0073C4BE /* YPImagePicker.framework */;
 			productType = "com.apple.product-type.framework";
@@ -700,7 +704,6 @@
 			name = Example;
 			packageProductDependencies = (
 				EBA37BCC26F75BCC005DAAD4 /* Stevia */,
-				4065C8B82887CBD500343177 /* PryntTrimmerView */,
 			);
 			productName = YPIPExample;
 			productReference = EBA37B4F26F749C6005DAAD4 /* Example.app */;
@@ -764,7 +767,7 @@
 			mainGroup = 52412A891CA6114A0073C4BE;
 			packageReferences = (
 				EBA37BCB26F75BCC005DAAD4 /* XCRemoteSwiftPackageReference "Stevia" */,
-				4065C8B72887CBD500343177 /* XCRemoteSwiftPackageReference "PryntTrimmerView" */,
+				C1959BA52892565E004D1488 /* XCRemoteSwiftPackageReference "PryntTrimmerView" */,
 			);
 			productRefGroup = 52412A941CA6114A0073C4BE /* Products */;
 			projectDirPath = "";
@@ -1145,7 +1148,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -1202,7 +1205,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -1235,7 +1238,7 @@
 				);
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1272,7 +1275,7 @@
 				);
 				INFOPLIST_FILE = Source/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1304,7 +1307,7 @@
 				DEVELOPMENT_TEAM = B3U3XRF8D7;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = Example/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1316,7 +1319,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TVOS_DEPLOYMENT_TARGET = 12.0;
+				TVOS_DEPLOYMENT_TARGET = 13.0;
 			};
 			name = Debug;
 		};
@@ -1335,7 +1338,7 @@
 				DEVELOPMENT_TEAM = B3U3XRF8D7;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = Example/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1345,7 +1348,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TVOS_DEPLOYMENT_TARGET = 12.0;
+				TVOS_DEPLOYMENT_TARGET = 13.0;
 			};
 			name = Release;
 		};
@@ -1382,9 +1385,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		4065C8B72887CBD500343177 /* XCRemoteSwiftPackageReference "PryntTrimmerView" */ = {
+		C1959BA52892565E004D1488 /* XCRemoteSwiftPackageReference "PryntTrimmerView" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/HHK1/PryntTrimmerView";
+			repositoryURL = "https://github.com/parkboo/PryntTrimmerView";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 4.0.4;
@@ -1401,9 +1404,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		4065C8B82887CBD500343177 /* PryntTrimmerView */ = {
+		C1959BA62892565E004D1488 /* PryntTrimmerView */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 4065C8B72887CBD500343177 /* XCRemoteSwiftPackageReference "PryntTrimmerView" */;
+			package = C1959BA52892565E004D1488 /* XCRemoteSwiftPackageReference "PryntTrimmerView" */;
 			productName = PryntTrimmerView;
 		};
 		EBA37BCC26F75BCC005DAAD4 /* Stevia */ = {

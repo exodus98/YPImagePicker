@@ -84,10 +84,9 @@ public struct YPColors {
     /// The color of the Album's title color
     public var albumTitleColor: UIColor = .ypLabel
     
-    //custom user color
-    public var customGray40: UIColor = .lightGray
-    
-    public var customGray80: UIColor = .darkGray
-    
-    public var customBackground: UIColor = .white
+    // MARK: - FLUV
+    /// 탭 위 구분선
+    public var trimmerTabLineCOlor: UIColor = .lightGray
+    /// 탭 선택색
+    public var trimmerTabSelected: UIColor = .systemGray
 }

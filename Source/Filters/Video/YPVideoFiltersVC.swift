@@ -80,19 +80,19 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     // FLUV
     private let bottomLine: UIView = {
         let v = UIView()
-        v.backgroundColor = YPConfig.colors.customGray40
+        v.backgroundColor = YPConfig.colors.trimmerTabLineCOlor
         return v
     }()
     
     private let selectionTrim: UIView = {
         let v = UIView()
-        v.backgroundColor = YPConfig.colors.customGray80
+        v.backgroundColor = YPConfig.colors.trimmerTabSelected
         return v
     }()
 
     private let selectionCover: UIView = {
         let v = UIView()
-        v.backgroundColor = YPConfig.colors.customGray80
+        v.backgroundColor = YPConfig.colors.trimmerTabSelected
         return v
     }()
 
@@ -171,6 +171,9 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
 
     private func setupLayout() {
         view.subviews(
+            bottomLine,
+            selectionTrim,
+            selectionCover,
             trimBottomItem,
             coverBottomItem,
             videoView,
