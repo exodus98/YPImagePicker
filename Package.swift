@@ -17,8 +17,8 @@ let package = Package(
             .exact("5.1.2")
         ),
         .package(
-            url: "https://github.com/parkboo/PryntTrimmerView",
-            .exact("4.0.4")
+            url: "https://github.com/exodus98/PryntTrimmerView",
+            .exact("4.0.5")
         )
 
     ],
