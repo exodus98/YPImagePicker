@@ -47,7 +47,7 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
     open override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = YPConfig.colors.customBackground
+        view.backgroundColor = YPConfig.colors.trimmerTabLineCOlor
         
         delegate = self
         

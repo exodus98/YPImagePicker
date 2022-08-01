@@ -41,7 +41,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     }()
     private let trimmerView: TrimmerView = {
         let v = TrimmerView()
-        v.mainColor = YPConfig.colors.customGray40
+        v.mainColor = YPConfig.colors.trimmerTabLineCOlor
         v.handleColor = YPConfig.colors.trimmerHandleColor
         v.positionBarColor = YPConfig.colors.positionLineColor
         v.maxDuration = YPConfig.video.trimmerMaxDuration
@@ -103,7 +103,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
 
         setupLayout()
         title = YPConfig.wordings.trim
-        view.backgroundColor = YPConfig.colors.customBackground
+        view.backgroundColor = YPConfig.colors.trimmerTabLineCOlor
         setupNavigationBar(isFromSelectionVC: self.isFromSelectionVC)
 
         // Remove the default and add a notification to repeat playback from the start
