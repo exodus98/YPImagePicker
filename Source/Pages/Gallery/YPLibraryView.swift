@@ -167,16 +167,16 @@ internal final class YPLibraryView: UIView {
     // MARK: - Private Methods
 
     private func setupLayout() {
-        subviews(
-            collectionContainerView.subviews(
+        sv(
+            collectionContainerView.sv(
                 collectionView
             ),
             line,
-            assetViewContainer.subviews(
+            assetViewContainer.sv(
                 assetZoomableView
             ),
             progressView,
-            maxNumberWarningView.subviews(
+            maxNumberWarningView.sv(
                 maxNumberWarningLabel
             )
         )
@@ -188,9 +188,9 @@ internal final class YPLibraryView: UIView {
         line.height(1)
         line.fillHorizontally()
 
-        assetViewContainer.top(0).fillHorizontally().heightEqualsWidth()
+        assetViewContainer.top(0).fillHorizontally().heightRatioWidth(ratio: YPImagePickerConfiguration.shared.libraryViewRatio)
         self.assetViewContainerConstraintTop = assetViewContainer.topConstraint
-        assetZoomableView.fillContainer().heightEqualsWidth()
+        assetZoomableView.fillContainer().heightRatioWidth(ratio: YPImagePickerConfiguration.shared.libraryViewRatio)
         assetZoomableView.Bottom == collectionView.Top
         assetViewContainer.sendSubviewToBack(assetZoomableView)
 
@@ -200,5 +200,32 @@ internal final class YPLibraryView: UIView {
         |maxNumberWarningView|.bottom(0)
         maxNumberWarningView.Top == safeAreaLayoutGuide.Bottom - 40
         maxNumberWarningLabel.centerHorizontally().top(11)
+    }
+}
+
+extension UIView {
+    func constraint(item view1: AnyObject,
+                    attribute attr1: NSLayoutConstraint.Attribute,
+                    relatedBy: NSLayoutConstraint.Relation = .equal,
+                    toItem view2: AnyObject? = nil,
+                    attribute attr2: NSLayoutConstraint.Attribute? = nil, // Not an attribute??
+                    multiplier: CGFloat = 1,
+                    constant: CGFloat = 0) -> NSLayoutConstraint {
+        let c =  NSLayoutConstraint(item: view1, attribute: attr1,
+                                    relatedBy: relatedBy,
+                                    toItem: view2, attribute: ((attr2 == nil) ? attr1 : attr2! ),
+                                    multiplier: multiplier, constant: constant)
+        c.priority = UILayoutPriority(rawValue: UILayoutPriority.defaultHigh.rawValue + 1)
+        return c
+    }
+    
+    func heightRatioWidth(ratio: CGFloat) -> Self {
+        if let spv = superview {
+            let d = constraint(item: self, attribute: .height, relatedBy: .equal, toItem: self, attribute: .width, multiplier: ratio, constant: 0)
+            spv.addConstraint(d)
+            //            let c = constraint(item: self, attribute: .height, toItem: self, attribute: .width)
+            //            spv.addConstraint(c)
+        }
+        return self
     }
 }

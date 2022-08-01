@@ -16,7 +16,7 @@ extension UIColor {
     static var offWhiteOrBlack: UIColor {
         if #available(iOS 13, *) {
             return UIColor { (traitCollection: UITraitCollection) -> UIColor in
-                let rgbValue: CGFloat = traitCollection.userInterfaceStyle == .dark ? 0 : 247
+                let rgbValue: CGFloat = traitCollection.userInterfaceStyle == .dark ? 0 : 255
                 return UIColor(r: rgbValue, g: rgbValue, b: rgbValue)
             }
         } else {
@@ -48,7 +48,7 @@ extension UIColor {
         if #available(iOS 13, *) {
             return .secondarySystemBackground
         }
-        return UIColor(r: 247, g: 247, b: 247)
+        return .white
     }
     
     /// The color for the main background of your interface.
