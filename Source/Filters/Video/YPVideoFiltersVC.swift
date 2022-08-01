@@ -103,7 +103,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
 
         setupLayout()
         title = YPConfig.wordings.trim
-        view.backgroundColor = YPConfig.colors.trimmerTabLineCOlor
+        view.backgroundColor = YPConfig.colors.backgroundColor
         setupNavigationBar(isFromSelectionVC: self.isFromSelectionVC)
 
         // Remove the default and add a notification to repeat playback from the start

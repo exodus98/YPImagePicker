@@ -89,4 +89,6 @@ public struct YPColors {
     public var trimmerTabLineCOlor: UIColor = .lightGray
     /// 탭 선택색
     public var trimmerTabSelected: UIColor = .systemGray
+    /// 배경색
+    public var backgroundColor: UIColor = .white
 }
