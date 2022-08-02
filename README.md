@@ -385,3 +385,10 @@ releases/tag/3.4.0)
 - Swift 5.0 -> version [**4.0.0**](https://github.com/Yummypets/YPImagePicker/releases/tag/4.0.0)
 - Swift 5.1 -> version [**4.1.2**](https://github.com/Yummypets/YPImagePicker/releases/tag/4.1.2)
 - Swift 5.3 -> version [**4.5.0**](https://github.com/Yummypets/YPImagePicker/releases/tag/4.5.0)
+    
+## Exodus Custom
+    트림바 커스텀 이미지 적용
+    트림바 관련해서 커스텀 색상 적용
+    갤러리에서 스와이프 시 카메라 이동 막음
+    갤러리에서 이미지 선택 시 기본으로 크롭 되도록 설정
+    갤러리에서 동영상 선택 시 애니메이션 이상한 버그 수정
