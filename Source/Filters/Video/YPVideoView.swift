@@ -49,9 +49,10 @@ public class YPVideoView: UIView {
     
         playerView.alpha = 0
         playImageView.alpha = 0.8
+        playerLayer.speed = Float.greatestFiniteMagnitude
         playerLayer.videoGravity = .resizeAspect
         previewImageView.contentMode = .scaleAspectFit
-        
+
         subviews(
             previewImageView,
             playerView,
@@ -114,6 +115,7 @@ extension YPVideoView {
     
     public func play() {
         player.play()
+        previewImageView.superview?.sendSubviewToBack(previewImageView)
         showPlayImage(show: false)
         addReachEndObserver()
     }
@@ -139,6 +141,7 @@ extension YPVideoView {
 // MARK: - Other API
 extension YPVideoView {
     public func setPreviewImage(_ image: UIImage) {
+        previewImageView.superview?.bringSubviewToFront(previewImageView)
         previewImageView.image = image
     }
     
