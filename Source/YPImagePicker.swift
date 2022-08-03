@@ -68,6 +68,7 @@ open class YPImagePicker: UINavigationController {
     override open func viewDidLoad() {
         super.viewDidLoad()
         picker.didClose = { [weak self] in
+            self?.picker.stopAll()
             self?._didFinishPicking?([], true)
         }
         viewControllers = [picker]
@@ -146,10 +147,12 @@ open class YPImagePicker: UINavigationController {
                     let videoFiltersVC = YPVideoFiltersVC.initWith(video: video,
                                                                    isFromSelectionVC: false)
                     videoFiltersVC.didSave = { [weak self] outputMedia in
+                        self?.picker.stopAll()
                         self?.didSelect(items: [outputMedia])
                     }
                     self?.pushViewController(videoFiltersVC, animated: true)
                 } else {
+                    self?.picker.stopAll()
                     self?.didSelect(items: [YPMediaItem.video(v: video)])
                 }
             }
