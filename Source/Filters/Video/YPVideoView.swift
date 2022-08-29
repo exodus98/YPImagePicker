@@ -13,7 +13,7 @@ import AVFoundation
 /// A video view that contains video layer, supports play, pause and other actions.
 /// Supports xib initialization.
 public class YPVideoView: UIView {
-    public let playImageView = UIImageView(image: nil)
+    public let playImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
     
     internal let playerView = UIView()
     internal let playerLayer = AVPlayerLayer()
