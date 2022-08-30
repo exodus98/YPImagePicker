@@ -24,7 +24,7 @@ public class YPVideoView: UIView {
             return AVPlayer()
         }
         
-        playImageView.image = YPConfig.icons.playImage
+//        playImageView.image = YPConfig.icons.playImage
         return player
     }
     
@@ -63,6 +63,7 @@ public class YPVideoView: UIView {
         playerView.fillContainer()
         playImageView.centerInContainer()
         playerView.layer.addSublayer(playerLayer)
+        pauseUnpause()
     }
     
     override public func layoutSubviews() {
@@ -71,7 +72,7 @@ public class YPVideoView: UIView {
     }
     
     @objc internal func singleTap() {
-        pauseUnpause()
+//        pauseUnpause()
     }
     
     @objc public func playerItemDidReachEnd(_ note: Notification) {
