@@ -63,7 +63,6 @@ public class YPVideoView: UIView {
         playerView.fillContainer()
         playImageView.centerInContainer()
         playerView.layer.addSublayer(playerLayer)
-        pauseUnpause()
     }
     
     override public func layoutSubviews() {
@@ -78,7 +77,7 @@ public class YPVideoView: UIView {
     @objc public func playerItemDidReachEnd(_ note: Notification) {
         player.actionAtItemEnd = .none
         player.seek(to: CMTime.zero)
-        player.play()
+        play()
     }
 }
 
@@ -118,7 +117,7 @@ extension YPVideoView {
         player.play()
         previewImageView.superview?.sendSubviewToBack(previewImageView)
         showPlayImage(show: false)
-        addReachEndObserver()
+//        addReachEndObserver()
     }
     
     public func pause() {
