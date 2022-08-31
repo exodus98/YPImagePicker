@@ -129,11 +129,12 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         
         selectTrim()
         videoView.loadVideo(inputVideo)
-        videoView.play()
 //        videoView.showPlayImage(show: true)
 //        startPlaybackTimeChecker()
         
         super.viewDidAppear(animated)
+        moveBar(CMTime.zero)
+        stopBar(CMTime.zero)
     }
     
     public override func viewWillDisappear(_ animated: Bool) {
@@ -365,21 +366,29 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
             trimmerView.seek(to: startTime)
         }
     }
-}
-
-// MARK: - TrimmerViewDelegate
-extension YPVideoFiltersVC: TrimmerViewDelegate {
-    public func positionBarStoppedMoving(_ playerTime: CMTime) {
+    
+    func moveBar(_ playerTime: CMTime) {
+        stopPlaybackTimeChecker()
+        videoView.pause()
+        videoView.player.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+    }
+    
+    func stopBar(_ playerTime: CMTime) {
         videoView.player.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
         videoView.play()
         startPlaybackTimeChecker()
         updateCoverPickerBounds()
     }
+}
+
+// MARK: - TrimmerViewDelegate
+extension YPVideoFiltersVC: TrimmerViewDelegate {
+    public func positionBarStoppedMoving(_ playerTime: CMTime) {
+        stopBar(playerTime)
+    }
     
     public func didChangePositionBar(_ playerTime: CMTime) {
-        stopPlaybackTimeChecker()
-        videoView.pause()
-        videoView.player.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+        moveBar(playerTime)
     }
 }
 
