@@ -194,6 +194,8 @@ class ExampleViewController: UIViewController {
 		//config.fonts.navigationBarTitleFont = UIFont.systemFont(ofSize: 22.0, weight: .heavy)
 		//config.fonts.leftBarButtonFont = UIFont.systemFont(ofSize: 22.0, weight: .heavy)
 
+        config.video.shouldStartPlaying = true
+        
         let picker = YPImagePicker(configuration: config)
 
         picker.imagePickerDelegate = self

@@ -131,6 +131,11 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         videoView.loadVideo(inputVideo)
 //        videoView.showPlayImage(show: true)
 //        startPlaybackTimeChecker()
+
+        // FLUV
+        if YPConfig.video.shouldStartPlaying {
+            videoView.play()
+        }
         
         super.viewDidAppear(animated)
         moveBar(CMTime.zero)
