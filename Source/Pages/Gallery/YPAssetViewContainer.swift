@@ -80,10 +80,11 @@ final class YPAssetViewContainer: UIView {
 
         if !onlySquare {
             // Crop Button
-            squareCropButton.setImage(YPConfig.icons.cropIcon, for: .normal)
-            subviews(squareCropButton)
-            squareCropButton.size(28).trailing(20)
-            squareCropButton.Bottom == self.Bottom - 20
+//            squareCropButton.setImage(YPConfig.icons.cropIcon, for: .normal)
+//            subviews(squareCropButton)
+//            squareCropButton.size(28).trailing(20)
+//            squareCropButton.Bottom == self.Bottom - 20
+            squareCropButton.isHidden = true
         }
 
         // Multiple selection button
