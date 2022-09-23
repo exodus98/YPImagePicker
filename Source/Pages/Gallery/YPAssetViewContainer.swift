@@ -90,11 +90,11 @@ final class YPAssetViewContainer: UIView {
         // Multiple selection button
         subviews(multipleSelectionButton)
         if onlySquare {
-            multipleSelectionButton.size(28).trailing(20)
+            multipleSelectionButton.size(36).trailing(20)
             multipleSelectionButton.Bottom == self.Bottom - 20
         }
         else {
-            multipleSelectionButton.size(28).trailing(58)
+            multipleSelectionButton.size(36).trailing(66)
             multipleSelectionButton.Bottom == self.Bottom - 20
         }
     }
