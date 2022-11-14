@@ -106,7 +106,7 @@ class ExampleViewController: UIViewController {
         config.shouldSaveNewPicturesToAlbum = false
 
         /* Choose the videoCompression. Defaults to AVAssetExportPresetHighestQuality */
-        config.video.compression = AVAssetExportPresetPassthrough
+        config.video.compression = AVAssetExportPreset1280x720
 
         /* Choose the recordingSizeLimit. If not setted, then limit is by time. */
         // config.video.recordingSizeLimit = 10000000
