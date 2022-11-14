@@ -25,25 +25,47 @@ extension PHCachingImageManager {
 					targetSize: CGSize,
 					callback: @escaping (UIImage, [String: Any]) -> Void) {
         let options = photoImageRequestOptions()
-    
-        // Fetch Highiest quality image possible.
-        requestImageData(for: asset, options: options) { data, _, _, _ in
-            if let data = data, let image = UIImage(data: data)?.resetOrientation() {
-            
-                // Crop the high quality image manually.
-                let xCrop: CGFloat = cropRect.origin.x * CGFloat(asset.pixelWidth)
-                let yCrop: CGFloat = cropRect.origin.y * CGFloat(asset.pixelHeight)
-                let scaledCropRect = CGRect(x: xCrop,
-                                            y: yCrop,
-                                            width: targetSize.width,
-                                            height: targetSize.height)
-                if let imageRef = image.cgImage?.cropping(to: scaledCropRect) {
-                    let croppedImage = UIImage(cgImage: imageRef)
-                    let exifs = self.metadataForImageData(data: data)
-                    callback(croppedImage, exifs)
+        if #available(iOS 13, *) {
+            requestImageDataAndOrientation(for: asset, options: options) { data, _, _, _ in
+                if let data = data, let image = UIImage(data: data)?.resetOrientation() {
+                    // Crop the high quality image manually.
+                    let xCrop: CGFloat = cropRect.origin.x * CGFloat(asset.pixelWidth)
+                    let yCrop: CGFloat = cropRect.origin.y * CGFloat(asset.pixelHeight)
+                    let scaledCropRect = CGRect(x: xCrop,
+                                                y: yCrop,
+                                                width: targetSize.width,
+                                                height: targetSize.height)
+                    if let imageRef = image.cgImage?.cropping(to: scaledCropRect) {
+                        let croppedImage = UIImage(cgImage: imageRef)
+                        let exifs = self.metadataForImageData(data: data)
+                        callback(croppedImage, exifs)
+                    }
                 }
             }
         }
+        else {
+            // Fetch Highiest quality image possible.
+            requestImageData(for: asset, options: options) { data, _, _, _ in
+                if let data = data, let image = UIImage(data: data)?.resetOrientation() {
+                
+                    // Crop the high quality image manually.
+                    let xCrop: CGFloat = cropRect.origin.x * CGFloat(asset.pixelWidth)
+                    let yCrop: CGFloat = cropRect.origin.y * CGFloat(asset.pixelHeight)
+                    let scaledCropRect = CGRect(x: xCrop,
+                                                y: yCrop,
+                                                width: targetSize.width,
+                                                height: targetSize.height)
+                    if let imageRef = image.cgImage?.cropping(to: scaledCropRect) {
+                        let croppedImage = UIImage(cgImage: imageRef)
+                        let exifs = self.metadataForImageData(data: data)
+                        callback(croppedImage, exifs)
+                    }
+                }
+            }
+        }
+        
+    
+        
     }
     
     private func metadataForImageData(data: Data) -> [String: Any] {

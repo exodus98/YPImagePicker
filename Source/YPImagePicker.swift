@@ -15,14 +15,29 @@ public protocol YPImagePickerDelegate: AnyObject {
     func shouldAddToSelection(indexPath: IndexPath, numSelections: Int) -> Bool
 }
 
+public protocol YPImagePickerProgressDelegate {
+    func progressUpdated(progress: Float)
+}
+
 open class YPImagePicker: UINavigationController {
     public typealias DidFinishPickingCompletion = (_ items: [YPMediaItem], _ cancelled: Bool) -> Void
+    public typealias DidFinishOnlyThumbCompletion = (_ thumbnailImage: UIImage) -> Void
+    public typealias DidFinishExportCompletion = () -> Void
 
     // MARK: - Public
 
     public weak var imagePickerDelegate: YPImagePickerDelegate?
+    public weak var videoFilterVC: YPVideoFiltersVC?
     public func didFinishPicking(completion: @escaping DidFinishPickingCompletion) {
         _didFinishPicking = completion
+    }
+    
+    public func didFinishOnlyThumb(completion: @escaping DidFinishOnlyThumbCompletion) {
+        _didFinishOnlyThumb = completion
+    }
+    
+    public func didFinishExportCompletion(completion: @escaping DidFinishExportCompletion) {
+        _didFinishExport = completion
     }
 
     /// Get a YPImagePicker instance with the default configuration.
@@ -54,16 +69,34 @@ open class YPImagePicker: UINavigationController {
     // MARK: - Private
 
     private var _didFinishPicking: DidFinishPickingCompletion?
-
+    private var _didFinishOnlyThumb: DidFinishOnlyThumbCompletion?
+    private var _didFinishExport: DidFinishExportCompletion?
+    private var selectedImages = [YPMediaItem]()
     // This nifty little trick enables us to call the single version of the callbacks.
     // This keeps the backwards compatibility keeps the api as simple as possible.
     // Multiple selection becomes available as an opt-in.
-    private func didSelect(items: [YPMediaItem]) {
-        _didFinishPicking?(items, false)
+    private func didSelect(items: [YPMediaItem], success: Bool = true) {
+        _didFinishPicking?(items, success)
+    }
+    
+    private func willProcess(thumbnail: UIImage) {
+        _didFinishOnlyThumb?(thumbnail)
+    }
+    
+    private func startExport() {
+        _didFinishExport?()
     }
     
     private let loadingView = YPLoadingView()
-    private let picker: YPPickerVC!
+    public let picker: YPPickerVC!
+    public var progressDelegate: YPImagePickerProgressDelegate?
+    public var progress: Float = 0 {
+        didSet {
+            if self.progressDelegate != nil {
+                self.progressDelegate!.progressUpdated(progress: progress)
+            }
+        }
+    }
 
     override open func viewDidLoad() {
         super.viewDidLoad()
@@ -76,7 +109,17 @@ open class YPImagePicker: UINavigationController {
         navigationBar.isTranslucent = false
         navigationBar.tintColor = .ypLabel
         view.backgroundColor = .ypSystemBackground
-
+        
+        picker.didSelectThumb = { [weak self] item in
+            switch item {
+            case .video(_):
+                break
+            case .photo(let photo):
+                self?.willProcess(thumbnail: photo.image)
+            }
+        }
+        
+        YPProgressManager.shared.picker = self
         picker.didSelectItems = { [weak self] items in
             // Use Fade transition instead of default push animation
             let transition = CATransition()
@@ -88,6 +131,16 @@ open class YPImagePicker: UINavigationController {
             // Multiple items flow
             if items.count > 1 {
                 if YPConfig.library.skipSelectionsGallery {
+                    // 선택한 이미지 데이터 저장해 놓고 처리는 이후에 한다.
+//                    self?.selectedImages = items
+//                    if let firstItem = items.first {
+//                        switch firstItem {
+//                        case .video(_):
+//                            break
+//                        case .photo(let photo):
+//                            self?.willProcess(thumbnail: photo.image)
+//                        }
+//                    }
                     self?.didSelect(items: items)
                     return
                 } else {
@@ -112,6 +165,8 @@ open class YPImagePicker: UINavigationController {
                             YPPhotoSaver.trySaveImage(photo.image, inAlbumNamed: YPConfig.albumName)
                         }
                     }
+//                    self?.selectedImages = [mediaItem]
+//                    self?.willProcess(thumbnail: photo.image)
                     self?.didSelect(items: [mediaItem])
                 }
                 
@@ -133,7 +188,7 @@ open class YPImagePicker: UINavigationController {
                     let filterVC = YPPhotoFiltersVC(inputPhoto: photo,
                                                     isFromSelectionVC: false)
                     // Show filters and then crop
-                    filterVC.didSave = { outputMedia in
+                    filterVC.didSave = { outputMedia, successed in
                         if case let YPMediaItem.photo(outputPhoto) = outputMedia {
                             showCropVC(photo: outputPhoto, completion: completion)
                         }
@@ -143,13 +198,21 @@ open class YPImagePicker: UINavigationController {
                     showCropVC(photo: photo, completion: completion)
                 }
             case .video(let video):
+                // 트리머와 썸네일 화면 보여주기
                 if YPConfig.showsVideoTrimmer {
                     let videoFiltersVC = YPVideoFiltersVC.initWith(video: video,
                                                                    isFromSelectionVC: false)
-                    videoFiltersVC.didSave = { [weak self] outputMedia in
-                        self?.picker.stopAll()
-                        self?.didSelect(items: [outputMedia])
+                    if YPConfig.library.backgroundComplession {
+                        videoFiltersVC.willBackgroundProcessing = { [weak self] image in
+                            self?.willProcess(thumbnail: image)
+                        }
                     }
+                    // 저장 후 액션(영상 멈추고 피커 나가기)
+                    videoFiltersVC.didSave = { [weak self] outputMedia, success in
+                        self?.picker.stopAll()
+                        self?.didSelect(items: [outputMedia], success: success)
+                    }
+                    self?.videoFilterVC = videoFiltersVC
                     self?.pushViewController(videoFiltersVC, animated: true)
                 } else {
                     self?.picker.stopAll()
@@ -169,6 +232,14 @@ open class YPImagePicker: UINavigationController {
         )
         loadingView.fillContainer()
         loadingView.alpha = 0
+    }
+    
+    public func exportImage() {
+//        let items = self.selectedImages
+//        if items.isEmpty {
+//            return
+//        }
+//        self.didSelect(items: items)
     }
 }
 

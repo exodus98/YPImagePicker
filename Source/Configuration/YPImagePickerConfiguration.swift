@@ -229,6 +229,13 @@ public struct YPConfigLibrary {
     
     /// Set the overlay type shown on top of the selected library item
     public var itemOverlayType: YPItemOverlayType = .grid
+    
+    /// Delay the Complession and trimmed video after exported gallery
+    /// 비 동기적으로 뒷단에서 압축과 트림 시간처리를 처리할지 여부
+    public var backgroundComplession: Bool = false
+    
+    // 다중 선택 시 최대 선택 횟수가 되었을 때 기본 피커에서 제공하는 하단 워닝 뷰가 뜰지 여부를 결정한다.
+    public var showMaximumSelectionWarningView: Bool = false
 }
 
 /// Encapsulates video specific settings.

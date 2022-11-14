@@ -14,6 +14,7 @@ import Photos
 class ExampleViewController: UIViewController {
     var selectedItems = [YPMediaItem]()
 
+    var examplePicker: YPImagePicker?
     lazy var selectedImageV : UIImageView = {
         let imageView = UIImageView(frame: CGRect(x: 0,
                                                   y: 0,
@@ -31,6 +32,17 @@ class ExampleViewController: UIViewController {
         button.setTitle("Pick", for: .normal)
         button.setTitleColor(.black, for: .normal)
         button.addTarget(self, action: #selector(showPicker), for: .touchUpInside)
+        return button
+    }()
+    
+    lazy var saveButton : UIButton = {
+        let button = UIButton(frame: CGRect(x: 0,
+                                            y: 300,
+                                            width: 100,
+                                            height: 100))
+        button.setTitle("save", for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        button.addTarget(self, action: #selector(showSave), for: .touchUpInside)
         return button
     }()
 
@@ -53,6 +65,7 @@ class ExampleViewController: UIViewController {
         view.addSubview(pickButton)
         pickButton.center = view.center
         view.addSubview(resultsButton)
+        view.addSubview(saveButton)
     }
 
     @objc
@@ -106,7 +119,7 @@ class ExampleViewController: UIViewController {
         config.shouldSaveNewPicturesToAlbum = false
 
         /* Choose the videoCompression. Defaults to AVAssetExportPresetHighestQuality */
-        config.video.compression = AVAssetExportPresetPassthrough
+        config.video.compression = AVAssetExportPreset1280x720
 
         /* Choose the recordingSizeLimit. If not setted, then limit is by time. */
         // config.video.recordingSizeLimit = 10000000
@@ -186,6 +199,7 @@ class ExampleViewController: UIViewController {
 
         config.library.preselectedItems = selectedItems
 
+        config.library.backgroundComplession = true
 
 		// Customise fonts
 		//config.fonts.menuItemFont = UIFont.systemFont(ofSize: 22.0, weight: .semibold)
@@ -202,23 +216,26 @@ class ExampleViewController: UIViewController {
 
         /* Change configuration directly */
         // YPImagePickerConfiguration.shared.wordings.libraryTitle = "Gallery2"
-
-        /* Multiple media implementation */
-        picker.didFinishPicking { [weak picker] items, cancelled in
-
+        
+        picker.didFinishOnlyThumb { [unowned picker] thumbnailImage in
+            picker.dismiss(animated: true, completion: nil)
+            self.selectedImageV.image = thumbnailImage
+        }
+        
+        picker.didFinishPicking { [unowned picker] items, cancelled in
             if cancelled {
-                print("Picker was canceled")
-                picker?.dismiss(animated: true, completion: nil)
+                picker.dismiss(animated: true, completion: nil)
                 return
             }
+            
             _ = items.map { print("🧀 \($0)") }
-
+            
             self.selectedItems = items
             if let firstItem = items.first {
                 switch firstItem {
                 case .photo(let photo):
                     self.selectedImageV.image = photo.image
-                    picker?.dismiss(animated: true, completion: nil)
+                    picker.dismiss(animated: true, completion: nil)
                 case .video(let video):
                     self.selectedImageV.image = video.thumbnail
 
@@ -227,13 +244,46 @@ class ExampleViewController: UIViewController {
                     let player = AVPlayer(playerItem: AVPlayerItem(url:assetURL))
                     playerVC.player = player
 
-                    picker?.dismiss(animated: true, completion: { [weak self] in
+                    picker.dismiss(animated: true, completion: { [weak self] in
                         self?.present(playerVC, animated: true, completion: nil)
                         print("😀 \(String(describing: self?.resolutionForLocalVideo(url: assetURL)!))")
+                        self?.examplePicker = nil
                     })
                 }
             }
         }
+
+        /* Multiple media implementation */
+//        picker.didFinishPicking { [weak picker] items, cancelled in
+//
+//            if cancelled {
+//                print("Picker was canceled")
+//                picker?.dismiss(animated: true, completion: nil)
+//                return
+//            }
+//            _ = items.map { print("🧀 \($0)") }
+//
+//            self.selectedItems = items
+//            if let firstItem = items.first {
+//                switch firstItem {
+//                case .photo(let photo):
+//                    self.selectedImageV.image = photo.image
+//                    picker?.dismiss(animated: true, completion: nil)
+//                case .video(let video):
+//                    self.selectedImageV.image = video.thumbnail
+//
+//                    let assetURL = video.url
+//                    let playerVC = AVPlayerViewController()
+//                    let player = AVPlayer(playerItem: AVPlayerItem(url:assetURL))
+//                    playerVC.player = player
+//
+//                    picker?.dismiss(animated: true, completion: { [weak self] in
+//                        self?.present(playerVC, animated: true, completion: nil)
+//                        print("😀 \(String(describing: self?.resolutionForLocalVideo(url: assetURL)!))")
+//                    })
+//                }
+//            }
+//        }
 
         /* Single Photo implementation. */
         // picker.didFinishPicking { [weak picker] items, _ in
@@ -259,8 +309,12 @@ class ExampleViewController: UIViewController {
         //        print("😀 \(String(describing: self?.resolutionForLocalVideo(url: assetURL)!))")
         //    })
         //}
-
+        examplePicker = picker
         present(picker, animated: true, completion: nil)
+    }
+    
+    @objc func showSave() {
+        examplePicker?.videoFilterVC?.save()
     }
 }
 

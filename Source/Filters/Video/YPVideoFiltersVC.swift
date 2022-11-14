@@ -26,7 +26,8 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
 
     public var inputVideo: YPMediaVideo!
     public var inputAsset: AVAsset { return AVAsset(url: inputVideo.url) }
-    public var didSave: ((YPMediaItem) -> Void)?
+    public var willBackgroundProcessing: ((UIImage) -> Void)?
+    public var didSave: ((YPMediaItem, Bool) -> Void)?
     public var didCancel: (() -> Void)?
 
     // MARK: - Private vars
@@ -117,7 +118,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         // Set initial video cover
         imageGenerator = AVAssetImageGenerator(asset: self.inputAsset)
         imageGenerator?.appliesPreferredTrackTransform = true
-        didChangeThumbPosition(CMTime(seconds: 1, preferredTimescale: 1))
+        didChangeThumbPosition(CMTime(seconds: 0, preferredTimescale: 1))
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -171,7 +172,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: rightBarButtonTitle,
                                                             style: .done,
                                                             target: self,
-                                                            action: #selector(save))
+                                                            action: #selector(selectMedia))
         navigationItem.rightBarButtonItem?.tintColor = YPConfig.colors.tintColor
         navigationItem.rightBarButtonItem?.setFont(font: YPConfig.fonts.rightBarButtonFont, forState: .normal)
     }
@@ -230,8 +231,15 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     }
 
     // MARK: - Actions
+    
+    @objc private func selectMedia() {
+        if let coverImage = self.coverImageView.image,
+           let willBackgroundProcessing = self.willBackgroundProcessing {
+            willBackgroundProcessing(coverImage)
+        }
+    }
 
-    @objc private func save() {
+    @objc public func save() {
         guard let didSave = didSave else {
             return ypLog("Don't have saveCallback")
         }
@@ -248,8 +256,8 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
             // /FAD486B4-784D-4397-B00C-AD0EFFB45F52/tmp/8A2B410A-BD34-4E3F-8CB5-A548A946C1F1.mov
             let destinationURL = URL(fileURLWithPath: NSTemporaryDirectory())
                 .appendingUniquePathComponent(pathExtension: YPConfig.video.fileType.fileExtension)
-            
-            _ = trimmedAsset.export(to: destinationURL) { [weak self] session in
+            print("export")
+            _ = trimmedAsset.export(to: destinationURL, isLast: true) { [weak self] session in
                 switch session.status {
                 case .completed:
                     DispatchQueue.main.async {
@@ -257,14 +265,26 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
                             let resultVideo = YPMediaVideo(thumbnail: coverImage,
                                                            videoURL: destinationURL,
                                                            asset: self?.inputVideo.asset)
-                            didSave(YPMediaItem.video(v: resultVideo))
+                            didSave(YPMediaItem.video(v: resultVideo), true)
                             self?.setupRightBarButtonItem()
                         } else {
-                            ypLog("Don't have coverImage.")
+                            let resultVideo = YPMediaVideo(thumbnail: UIImage(),
+                                                           videoURL: destinationURL,
+                                                           asset: self?.inputVideo.asset)
+                            didSave(YPMediaItem.video(v: resultVideo), true)
+                            self?.setupRightBarButtonItem()
                         }
+                        YPProgressManager.shared.exportVideo()
                     }
                 case .failed:
                     ypLog("Export of the video failed. Reason: \(String(describing: session.error))")
+                    if let videoURL = self?.inputVideo.url {
+                        let resultVideo = YPMediaVideo(thumbnail: UIImage(),
+                                                       videoURL: videoURL,
+                                                       asset: self?.inputVideo.asset)
+                        didSave(YPMediaItem.video(v: resultVideo), false)
+                    }
+                    
                 default:
                     ypLog("Export session completed with \(session.status) status. Not handled")
                 }
