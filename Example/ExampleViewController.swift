@@ -186,6 +186,7 @@ class ExampleViewController: UIViewController {
 
         config.library.preselectedItems = selectedItems
 
+        config.library.backgroundComplession = true
 
 		// Customise fonts
 		//config.fonts.menuItemFont = UIFont.systemFont(ofSize: 22.0, weight: .semibold)

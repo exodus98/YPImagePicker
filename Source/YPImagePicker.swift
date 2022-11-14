@@ -143,9 +143,11 @@ open class YPImagePicker: UINavigationController {
                     showCropVC(photo: photo, completion: completion)
                 }
             case .video(let video):
+                // 트리머와 썸네일 화면 보여주기
                 if YPConfig.showsVideoTrimmer {
                     let videoFiltersVC = YPVideoFiltersVC.initWith(video: video,
                                                                    isFromSelectionVC: false)
+                    // 저장 후 액션(영상 멈추고 피커 나가기)
                     videoFiltersVC.didSave = { [weak self] outputMedia in
                         self?.picker.stopAll()
                         self?.didSelect(items: [outputMedia])

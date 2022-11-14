@@ -533,6 +533,7 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
                 case .audio, .unknown:
                     return
                 case .video:
+                    // 라이브러리에서 비디오 단독 선택 -> 여기선 압축 하지 말것
                     self.fetchVideoAndApplySettings(for: asset, callback: { videoURL in
                         DispatchQueue.main.async {
                             if let videoURL = videoURL {
