@@ -26,6 +26,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
 
     public var inputVideo: YPMediaVideo!
     public var inputAsset: AVAsset { return AVAsset(url: inputVideo.url) }
+    public var willBackgroundProcessing: ((UIImage) -> Void)?
     public var didSave: ((YPMediaItem) -> Void)?
     public var didCancel: (() -> Void)?
 
@@ -249,6 +250,10 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
             let destinationURL = URL(fileURLWithPath: NSTemporaryDirectory())
                 .appendingUniquePathComponent(pathExtension: YPConfig.video.fileType.fileExtension)
             print("export")
+            if let coverImage = self.coverImageView.image,
+               let willBackgroundProcessing = self.willBackgroundProcessing {
+                willBackgroundProcessing(coverImage)
+            }
             _ = trimmedAsset.export(to: destinationURL, isLast: true) { [weak self] session in
                 switch session.status {
                 case .completed:

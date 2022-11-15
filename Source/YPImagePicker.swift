@@ -17,12 +17,17 @@ public protocol YPImagePickerDelegate: AnyObject {
 
 open class YPImagePicker: UINavigationController {
     public typealias DidFinishPickingCompletion = (_ items: [YPMediaItem], _ cancelled: Bool) -> Void
+    public typealias DidFinishOnlyThumbCompletion = (_ thumbnailImage: UIImage) -> Void
 
     // MARK: - Public
 
     public weak var imagePickerDelegate: YPImagePickerDelegate?
     public func didFinishPicking(completion: @escaping DidFinishPickingCompletion) {
         _didFinishPicking = completion
+    }
+    
+    public func DidFinishOnlyThumb(completion: @escaping DidFinishOnlyThumbCompletion) {
+        _didFinishOnlyThumb = completion
     }
 
     /// Get a YPImagePicker instance with the default configuration.
@@ -54,12 +59,18 @@ open class YPImagePicker: UINavigationController {
     // MARK: - Private
 
     private var _didFinishPicking: DidFinishPickingCompletion?
+    
+    private var _didFinishOnlyThumb: DidFinishOnlyThumbCompletion?
 
     // This nifty little trick enables us to call the single version of the callbacks.
     // This keeps the backwards compatibility keeps the api as simple as possible.
     // Multiple selection becomes available as an opt-in.
     private func didSelect(items: [YPMediaItem]) {
         _didFinishPicking?(items, false)
+    }
+    
+    private func willProcess(thumbnail: UIImage) {
+        _didFinishOnlyThumb?(thumbnail)
     }
     
     private let loadingView = YPLoadingView()
@@ -147,6 +158,11 @@ open class YPImagePicker: UINavigationController {
                 if YPConfig.showsVideoTrimmer {
                     let videoFiltersVC = YPVideoFiltersVC.initWith(video: video,
                                                                    isFromSelectionVC: false)
+                    if YPConfig.library.backgroundComplession {
+                        videoFiltersVC.willBackgroundProcessing = { [weak self] image in
+                            self?.willProcess(thumbnail: image)
+                        }
+                    }
                     // 저장 후 액션(영상 멈추고 피커 나가기)
                     videoFiltersVC.didSave = { [weak self] outputMedia in
                         self?.picker.stopAll()
