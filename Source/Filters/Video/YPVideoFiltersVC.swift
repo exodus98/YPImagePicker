@@ -118,7 +118,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         // Set initial video cover
         imageGenerator = AVAssetImageGenerator(asset: self.inputAsset)
         imageGenerator?.appliesPreferredTrackTransform = true
-        didChangeThumbPosition(CMTime(seconds: 1, preferredTimescale: 1))
+        didChangeThumbPosition(CMTime(seconds: 0, preferredTimescale: 1))
     }
 
     override public func viewDidAppear(_ animated: Bool) {
