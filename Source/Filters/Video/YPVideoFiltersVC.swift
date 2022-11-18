@@ -172,7 +172,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: rightBarButtonTitle,
                                                             style: .done,
                                                             target: self,
-                                                            action: #selector(save))
+                                                            action: #selector(selectMedia))
         navigationItem.rightBarButtonItem?.tintColor = YPConfig.colors.tintColor
         navigationItem.rightBarButtonItem?.setFont(font: YPConfig.fonts.rightBarButtonFont, forState: .normal)
     }
@@ -231,8 +231,15 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     }
 
     // MARK: - Actions
+    
+    @objc private func selectMedia() {
+        if let coverImage = self.coverImageView.image,
+           let willBackgroundProcessing = self.willBackgroundProcessing {
+            willBackgroundProcessing(coverImage)
+        }
+    }
 
-    @objc private func save() {
+    @objc func save() {
         guard let didSave = didSave else {
             return ypLog("Don't have saveCallback")
         }
@@ -250,10 +257,6 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
             let destinationURL = URL(fileURLWithPath: NSTemporaryDirectory())
                 .appendingUniquePathComponent(pathExtension: YPConfig.video.fileType.fileExtension)
             print("export")
-            if let coverImage = self.coverImageView.image,
-               let willBackgroundProcessing = self.willBackgroundProcessing {
-                willBackgroundProcessing(coverImage)
-            }
             _ = trimmedAsset.export(to: destinationURL, isLast: true) { [weak self] session in
                 switch session.status {
                 case .completed:

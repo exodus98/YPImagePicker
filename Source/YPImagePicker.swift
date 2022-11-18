@@ -18,16 +18,22 @@ public protocol YPImagePickerDelegate: AnyObject {
 open class YPImagePicker: UINavigationController {
     public typealias DidFinishPickingCompletion = (_ items: [YPMediaItem], _ cancelled: Bool) -> Void
     public typealias DidFinishOnlyThumbCompletion = (_ thumbnailImage: UIImage) -> Void
+    public typealias DidFinishExportCompletion = () -> Void
 
     // MARK: - Public
 
     public weak var imagePickerDelegate: YPImagePickerDelegate?
+    public weak var videoFilterVC: YPVideoFiltersVC?
     public func didFinishPicking(completion: @escaping DidFinishPickingCompletion) {
         _didFinishPicking = completion
     }
     
     public func didFinishOnlyThumb(completion: @escaping DidFinishOnlyThumbCompletion) {
         _didFinishOnlyThumb = completion
+    }
+    
+    public func didFinishExportCompletion(completion: @escaping DidFinishExportCompletion) {
+        _didFinishExport = completion
     }
 
     /// Get a YPImagePicker instance with the default configuration.
@@ -59,8 +65,8 @@ open class YPImagePicker: UINavigationController {
     // MARK: - Private
 
     private var _didFinishPicking: DidFinishPickingCompletion?
-    
     private var _didFinishOnlyThumb: DidFinishOnlyThumbCompletion?
+    private var _didFinishExport: DidFinishExportCompletion?
 
     // This nifty little trick enables us to call the single version of the callbacks.
     // This keeps the backwards compatibility keeps the api as simple as possible.
@@ -71,6 +77,10 @@ open class YPImagePicker: UINavigationController {
     
     private func willProcess(thumbnail: UIImage) {
         _didFinishOnlyThumb?(thumbnail)
+    }
+    
+    private func startExport() {
+        _didFinishExport?()
     }
     
     private let loadingView = YPLoadingView()
@@ -168,6 +178,7 @@ open class YPImagePicker: UINavigationController {
                         self?.picker.stopAll()
                         self?.didSelect(items: [outputMedia])
                     }
+                    self?.videoFilterVC = videoFiltersVC
                     self?.pushViewController(videoFiltersVC, animated: true)
                 } else {
                     self?.picker.stopAll()

@@ -14,6 +14,7 @@ import Photos
 class ExampleViewController: UIViewController {
     var selectedItems = [YPMediaItem]()
 
+    weak var examplePicker: YPImagePicker?
     lazy var selectedImageV : UIImageView = {
         let imageView = UIImageView(frame: CGRect(x: 0,
                                                   y: 0,
@@ -31,6 +32,17 @@ class ExampleViewController: UIViewController {
         button.setTitle("Pick", for: .normal)
         button.setTitleColor(.black, for: .normal)
         button.addTarget(self, action: #selector(showPicker), for: .touchUpInside)
+        return button
+    }()
+    
+    lazy var saveButton : UIButton = {
+        let button = UIButton(frame: CGRect(x: 0,
+                                            y: 300,
+                                            width: 100,
+                                            height: 100))
+        button.setTitle("save", for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        button.addTarget(self, action: #selector(showSave), for: .touchUpInside)
         return button
     }()
 
@@ -53,6 +65,7 @@ class ExampleViewController: UIViewController {
         view.addSubview(pickButton)
         pickButton.center = view.center
         view.addSubview(resultsButton)
+        view.addSubview(saveButton)
     }
 
     @objc
@@ -295,8 +308,12 @@ class ExampleViewController: UIViewController {
         //        print("😀 \(String(describing: self?.resolutionForLocalVideo(url: assetURL)!))")
         //    })
         //}
-
+        examplePicker = picker
         present(picker, animated: true, completion: nil)
+    }
+    
+    @objc func showSave() {
+        examplePicker?.videoFilterVC?.save()
     }
 }
 
