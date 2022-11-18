@@ -26,7 +26,7 @@ open class YPImagePicker: UINavigationController {
         _didFinishPicking = completion
     }
     
-    public func DidFinishOnlyThumb(completion: @escaping DidFinishOnlyThumbCompletion) {
+    public func didFinishOnlyThumb(completion: @escaping DidFinishOnlyThumbCompletion) {
         _didFinishOnlyThumb = completion
     }
 

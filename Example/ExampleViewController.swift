@@ -204,7 +204,7 @@ class ExampleViewController: UIViewController {
         /* Change configuration directly */
         // YPImagePickerConfiguration.shared.wordings.libraryTitle = "Gallery2"
         
-        picker.DidFinishOnlyThumb { thumbnailImage in
+        picker.didFinishOnlyThumb { thumbnailImage in
             picker.dismiss(animated: true, completion: nil)
             self.selectedImageV.image = thumbnailImage
         }
