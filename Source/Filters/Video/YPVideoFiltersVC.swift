@@ -239,7 +239,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         }
     }
 
-    @objc func save() {
+    @objc public func save() {
         guard let didSave = didSave else {
             return ypLog("Don't have saveCallback")
         }
@@ -268,7 +268,11 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
                             didSave(YPMediaItem.video(v: resultVideo))
                             self?.setupRightBarButtonItem()
                         } else {
-                            ypLog("Don't have coverImage.")
+                            let resultVideo = YPMediaVideo(thumbnail: UIImage(),
+                                                           videoURL: destinationURL,
+                                                           asset: self?.inputVideo.asset)
+                            didSave(YPMediaItem.video(v: resultVideo))
+                            self?.setupRightBarButtonItem()
                         }
                     }
                 case .failed:

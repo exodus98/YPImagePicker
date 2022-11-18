@@ -14,7 +14,7 @@ import Photos
 class ExampleViewController: UIViewController {
     var selectedItems = [YPMediaItem]()
 
-    weak var examplePicker: YPImagePicker?
+    var examplePicker: YPImagePicker?
     lazy var selectedImageV : UIImageView = {
         let imageView = UIImageView(frame: CGRect(x: 0,
                                                   y: 0,
@@ -217,7 +217,7 @@ class ExampleViewController: UIViewController {
         /* Change configuration directly */
         // YPImagePickerConfiguration.shared.wordings.libraryTitle = "Gallery2"
         
-        picker.didFinishOnlyThumb { thumbnailImage in
+        picker.didFinishOnlyThumb { [unowned picker] thumbnailImage in
             picker.dismiss(animated: true, completion: nil)
             self.selectedImageV.image = thumbnailImage
         }
@@ -247,6 +247,7 @@ class ExampleViewController: UIViewController {
                     picker.dismiss(animated: true, completion: { [weak self] in
                         self?.present(playerVC, animated: true, completion: nil)
                         print("😀 \(String(describing: self?.resolutionForLocalVideo(url: assetURL)!))")
+                        self?.examplePicker = nil
                     })
                 }
             }
