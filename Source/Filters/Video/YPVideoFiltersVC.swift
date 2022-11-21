@@ -277,10 +277,13 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
                     }
                 case .failed:
                     ypLog("Export of the video failed. Reason: \(String(describing: session.error))")
-                    let resultVideo = YPMediaVideo(thumbnail: UIImage(),
-                                                   videoURL: URL(string: "")!,
-                                                   asset: self?.inputVideo.asset)
-                    didSave(YPMediaItem.video(v: resultVideo), false)
+                    if let videoURL = self?.inputVideo.url {
+                        let resultVideo = YPMediaVideo(thumbnail: UIImage(),
+                                                       videoURL: videoURL,
+                                                       asset: self?.inputVideo.asset)
+                        didSave(YPMediaItem.video(v: resultVideo), false)
+                    }
+                    
                 default:
                     ypLog("Export session completed with \(session.status) status. Not handled")
                 }
