@@ -27,7 +27,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     public var inputVideo: YPMediaVideo!
     public var inputAsset: AVAsset { return AVAsset(url: inputVideo.url) }
     public var willBackgroundProcessing: ((UIImage) -> Void)?
-    public var didSave: ((YPMediaItem) -> Void)?
+    public var didSave: ((YPMediaItem, Bool) -> Void)?
     public var didCancel: (() -> Void)?
 
     // MARK: - Private vars
@@ -265,18 +265,22 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
                             let resultVideo = YPMediaVideo(thumbnail: coverImage,
                                                            videoURL: destinationURL,
                                                            asset: self?.inputVideo.asset)
-                            didSave(YPMediaItem.video(v: resultVideo))
+                            didSave(YPMediaItem.video(v: resultVideo), true)
                             self?.setupRightBarButtonItem()
                         } else {
                             let resultVideo = YPMediaVideo(thumbnail: UIImage(),
                                                            videoURL: destinationURL,
                                                            asset: self?.inputVideo.asset)
-                            didSave(YPMediaItem.video(v: resultVideo))
+                            didSave(YPMediaItem.video(v: resultVideo), true)
                             self?.setupRightBarButtonItem()
                         }
                     }
                 case .failed:
                     ypLog("Export of the video failed. Reason: \(String(describing: session.error))")
+                    let resultVideo = YPMediaVideo(thumbnail: UIImage(),
+                                                   videoURL: URL(string: "")!,
+                                                   asset: self?.inputVideo.asset)
+                    didSave(YPMediaItem.video(v: resultVideo), false)
                 default:
                     ypLog("Export session completed with \(session.status) status. Not handled")
                 }
