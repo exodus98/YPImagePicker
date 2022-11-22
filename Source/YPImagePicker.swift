@@ -71,8 +71,8 @@ open class YPImagePicker: UINavigationController {
     // This nifty little trick enables us to call the single version of the callbacks.
     // This keeps the backwards compatibility keeps the api as simple as possible.
     // Multiple selection becomes available as an opt-in.
-    private func didSelect(items: [YPMediaItem], successed: Bool = false) {
-        _didFinishPicking?(items, successed)
+    private func didSelect(items: [YPMediaItem], success: Bool = true) {
+        _didFinishPicking?(items, success)
     }
     
     private func willProcess(thumbnail: UIImage) {
@@ -174,9 +174,9 @@ open class YPImagePicker: UINavigationController {
                         }
                     }
                     // 저장 후 액션(영상 멈추고 피커 나가기)
-                    videoFiltersVC.didSave = { [weak self] outputMedia, successed in
+                    videoFiltersVC.didSave = { [weak self] outputMedia, success in
                         self?.picker.stopAll()
-                        self?.didSelect(items: [outputMedia], successed: successed)
+                        self?.didSelect(items: [outputMedia], success: success)
                     }
                     self?.videoFilterVC = videoFiltersVC
                     self?.pushViewController(videoFiltersVC, animated: true)
