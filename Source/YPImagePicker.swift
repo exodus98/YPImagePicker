@@ -67,7 +67,7 @@ open class YPImagePicker: UINavigationController {
     private var _didFinishPicking: DidFinishPickingCompletion?
     private var _didFinishOnlyThumb: DidFinishOnlyThumbCompletion?
     private var _didFinishExport: DidFinishExportCompletion?
-
+    private var selectedImages = [YPMediaItem]()
     // This nifty little trick enables us to call the single version of the callbacks.
     // This keeps the backwards compatibility keeps the api as simple as possible.
     // Multiple selection becomes available as an opt-in.
@@ -109,7 +109,17 @@ open class YPImagePicker: UINavigationController {
             // Multiple items flow
             if items.count > 1 {
                 if YPConfig.library.skipSelectionsGallery {
-                    self?.didSelect(items: items)
+                    // 선택한 이미지 데이터 저장해 놓고 처리는 이후에 한다.
+                    self?.selectedImages = items
+                    if let firstItem = items.first {
+                        switch firstItem {
+                        case .video(_):
+                            break
+                        case .photo(let photo):
+                            self?.willProcess(thumbnail: photo.image)
+                        }
+                    }
+//                    self?.didSelect(items: items)
                     return
                 } else {
                     let selectionsGalleryVC = YPSelectionsGalleryVC(items: items) { _, items in
@@ -133,7 +143,9 @@ open class YPImagePicker: UINavigationController {
                             YPPhotoSaver.trySaveImage(photo.image, inAlbumNamed: YPConfig.albumName)
                         }
                     }
-                    self?.didSelect(items: [mediaItem])
+                    self?.selectedImages = [mediaItem]
+                    self?.willProcess(thumbnail: photo.image)
+//                    self?.didSelect(items: [mediaItem])
                 }
                 
                 func showCropVC(photo: YPMediaPhoto, completion: @escaping (_ aphoto: YPMediaPhoto) -> Void) {
@@ -198,6 +210,14 @@ open class YPImagePicker: UINavigationController {
         )
         loadingView.fillContainer()
         loadingView.alpha = 0
+    }
+    
+    public func exportImage() {
+        let items = self.selectedImages
+        if items.isEmpty {
+            return
+        }
+        self.didSelect(items: items)
     }
 }
 
