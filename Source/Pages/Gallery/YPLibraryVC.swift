@@ -435,7 +435,8 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
     
     public func selectedMedia(photoCallback: @escaping (_ photo: YPMediaPhoto) -> Void,
                               videoCallback: @escaping (_ videoURL: YPMediaVideo) -> Void,
-                              multipleItemsCallback: @escaping (_ items: [YPMediaItem]) -> Void) {
+                              multipleItemsCallback: @escaping (_ items: [YPMediaItem]) -> Void,
+                              isBackgroundExportMode: Bool = false) {
         DispatchQueue.global(qos: .userInitiated).async {
             
             let selectedAssets: [(asset: PHAsset, cropRect: CGRect?)] = self.selectedItems.compactMap {
@@ -466,32 +467,65 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
                     assetDictionary[assetPair.asset] = index
                 }
                 
-                for asset in selectedAssets {
-                    asyncGroup.enter()
-                    
-                    switch asset.asset.mediaType {
-                    case .image:
-                        self.fetchImageAndCrop(for: asset.asset, withCropRect: asset.cropRect) { image, exifMeta in
-                            let photo = YPMediaPhoto(image: image.resizedImageIfNeeded(),
-													 exifMeta: exifMeta, asset: asset.asset)
-                            resultMediaItems.append(YPMediaItem.photo(p: photo))
-                            asyncGroup.leave()
-                        }
+                // 백그라운드 모드라면 첫번째 것만 한다.
+                if isBackgroundExportMode {
+                    if let asset = selectedAssets.first {
+                        asyncGroup.enter()
                         
-                    case .video:
-                        self.fetchVideoAndApplySettings(for: asset.asset,
-                                                             withCropRect: asset.cropRect) { videoURL in
-                            if let videoURL = videoURL {
-                                let videoItem = YPMediaVideo(thumbnail: thumbnailFromVideoPath(videoURL),
-                                                             videoURL: videoURL, asset: asset.asset)
-                                resultMediaItems.append(YPMediaItem.video(v: videoItem))
-                            } else {
-                                ypLog("Problems with fetching videoURL.")
+                        switch asset.asset.mediaType {
+                        case .image:
+                            self.fetchImageAndCrop(for: asset.asset, withCropRect: asset.cropRect) { image, exifMeta in
+                                let photo = YPMediaPhoto(image: image.resizedImageIfNeeded(),
+                                                         exifMeta: exifMeta, asset: asset.asset)
+                                resultMediaItems.append(YPMediaItem.photo(p: photo))
+                                asyncGroup.leave()
                             }
-                            asyncGroup.leave()
+                            
+                        case .video:
+                            self.fetchVideoAndApplySettings(for: asset.asset,
+                                                                 withCropRect: asset.cropRect) { videoURL in
+                                if let videoURL = videoURL {
+                                    let videoItem = YPMediaVideo(thumbnail: thumbnailFromVideoPath(videoURL),
+                                                                 videoURL: videoURL, asset: asset.asset)
+                                    resultMediaItems.append(YPMediaItem.video(v: videoItem))
+                                } else {
+                                    ypLog("Problems with fetching videoURL.")
+                                }
+                                asyncGroup.leave()
+                            }
+                        default:
+                            break
                         }
-                    default:
-                        break
+                    }
+                }
+                else {
+                    for asset in selectedAssets {
+                        asyncGroup.enter()
+                        
+                        switch asset.asset.mediaType {
+                        case .image:
+                            self.fetchImageAndCrop(for: asset.asset, withCropRect: asset.cropRect) { image, exifMeta in
+                                let photo = YPMediaPhoto(image: image.resizedImageIfNeeded(),
+                                                         exifMeta: exifMeta, asset: asset.asset)
+                                resultMediaItems.append(YPMediaItem.photo(p: photo))
+                                asyncGroup.leave()
+                            }
+                            
+                        case .video:
+                            self.fetchVideoAndApplySettings(for: asset.asset,
+                                                                 withCropRect: asset.cropRect) { videoURL in
+                                if let videoURL = videoURL {
+                                    let videoItem = YPMediaVideo(thumbnail: thumbnailFromVideoPath(videoURL),
+                                                                 videoURL: videoURL, asset: asset.asset)
+                                    resultMediaItems.append(YPMediaItem.video(v: videoItem))
+                                } else {
+                                    ypLog("Problems with fetching videoURL.")
+                                }
+                                asyncGroup.leave()
+                            }
+                        default:
+                            break
+                        }
                     }
                 }
                 

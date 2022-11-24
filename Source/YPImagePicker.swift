@@ -84,7 +84,7 @@ open class YPImagePicker: UINavigationController {
     }
     
     private let loadingView = YPLoadingView()
-    private let picker: YPPickerVC!
+    public let picker: YPPickerVC!
 
     override open func viewDidLoad() {
         super.viewDidLoad()
@@ -97,6 +97,15 @@ open class YPImagePicker: UINavigationController {
         navigationBar.isTranslucent = false
         navigationBar.tintColor = .ypLabel
         view.backgroundColor = .ypSystemBackground
+        
+        picker.didSelectThumb = { [weak self] item in
+            switch item {
+            case .video(_):
+                break
+            case .photo(let photo):
+                self?.willProcess(thumbnail: photo.image)
+            }
+        }
 
         picker.didSelectItems = { [weak self] items in
             // Use Fade transition instead of default push animation
@@ -110,16 +119,16 @@ open class YPImagePicker: UINavigationController {
             if items.count > 1 {
                 if YPConfig.library.skipSelectionsGallery {
                     // 선택한 이미지 데이터 저장해 놓고 처리는 이후에 한다.
-                    self?.selectedImages = items
-                    if let firstItem = items.first {
-                        switch firstItem {
-                        case .video(_):
-                            break
-                        case .photo(let photo):
-                            self?.willProcess(thumbnail: photo.image)
-                        }
-                    }
-//                    self?.didSelect(items: items)
+//                    self?.selectedImages = items
+//                    if let firstItem = items.first {
+//                        switch firstItem {
+//                        case .video(_):
+//                            break
+//                        case .photo(let photo):
+//                            self?.willProcess(thumbnail: photo.image)
+//                        }
+//                    }
+                    self?.didSelect(items: items)
                     return
                 } else {
                     let selectionsGalleryVC = YPSelectionsGalleryVC(items: items) { _, items in
@@ -143,9 +152,9 @@ open class YPImagePicker: UINavigationController {
                             YPPhotoSaver.trySaveImage(photo.image, inAlbumNamed: YPConfig.albumName)
                         }
                     }
-                    self?.selectedImages = [mediaItem]
-                    self?.willProcess(thumbnail: photo.image)
-//                    self?.didSelect(items: [mediaItem])
+//                    self?.selectedImages = [mediaItem]
+//                    self?.willProcess(thumbnail: photo.image)
+                    self?.didSelect(items: [mediaItem])
                 }
                 
                 func showCropVC(photo: YPMediaPhoto, completion: @escaping (_ aphoto: YPMediaPhoto) -> Void) {
@@ -213,11 +222,11 @@ open class YPImagePicker: UINavigationController {
     }
     
     public func exportImage() {
-        let items = self.selectedImages
-        if items.isEmpty {
-            return
-        }
-        self.didSelect(items: items)
+//        let items = self.selectedImages
+//        if items.isEmpty {
+//            return
+//        }
+//        self.didSelect(items: items)
     }
 }
 

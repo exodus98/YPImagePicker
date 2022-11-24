@@ -29,6 +29,7 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
     /// Private callbacks to YPImagePicker
     public var didClose:(() -> Void)?
     public var didSelectItems: (([YPMediaItem]) -> Void)?
+    public var didSelectThumb: ((YPMediaItem) -> Void)?
     
     enum Mode {
         case library
@@ -278,7 +279,7 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
             navigationItem.rightBarButtonItem = UIBarButtonItem(title: YPConfig.wordings.next,
                                                                 style: .done,
                                                                 target: self,
-                                                                action: #selector(done))
+                                                                action: #selector(selectDone))
             navigationItem.rightBarButtonItem?.tintColor = YPConfig.colors.tintColor
 
             // Disable Next Button until minNumberOfItems is reached.
@@ -311,7 +312,7 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
     
     // When pressing "Next"
     @objc
-    func done() {
+    public func done() {
         guard let libraryVC = libraryVC else { ypLog("YPLibraryVC deallocated"); return }
         
         if mode == .library {
@@ -323,6 +324,28 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
             }, multipleItemsCallback: { items in
                 self.didSelectItems?(items)
             })
+        }
+    }
+    
+    @objc
+    func selectDone() {
+        if !YPConfig.library.backgroundComplession {
+            done()
+            return
+        }
+        guard let libraryVC = libraryVC else { ypLog("YPLibraryVC deallocated"); return }
+        
+        if mode == .library {
+            libraryVC.selectedMedia(photoCallback: { photo in
+                self.didSelectThumb?(YPMediaItem.photo(p: photo))
+            }, videoCallback: { video in
+                self.didSelectThumb?(YPMediaItem
+                                        .video(v: video))
+            }, multipleItemsCallback: { items in
+                if let firstItem = items.first {
+                    self.didSelectThumb?(firstItem)
+                }
+            }, isBackgroundExportMode: true)
         }
     }
     
