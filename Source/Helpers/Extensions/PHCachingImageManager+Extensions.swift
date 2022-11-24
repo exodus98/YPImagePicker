@@ -27,6 +27,8 @@ extension PHCachingImageManager {
         let options = photoImageRequestOptions()
     
         // Fetch Highiest quality image possible.
+        print("fetchImage - Start")
+        print(Date())
         requestImageData(for: asset, options: options) { data, _, _, _ in
             if let data = data, let image = UIImage(data: data)?.resetOrientation() {
             
@@ -37,9 +39,13 @@ extension PHCachingImageManager {
                                             y: yCrop,
                                             width: targetSize.width,
                                             height: targetSize.height)
+                print("fetchImage - Mid")
+                print(Date())
                 if let imageRef = image.cgImage?.cropping(to: scaledCropRect) {
                     let croppedImage = UIImage(cgImage: imageRef)
                     let exifs = self.metadataForImageData(data: data)
+                    print("fetchImage - Done")
+                    print(Date())
                     callback(croppedImage, exifs)
                 }
             }
