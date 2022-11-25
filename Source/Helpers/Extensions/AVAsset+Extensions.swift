@@ -61,10 +61,11 @@ extension AVAsset {
         
         if removeOldFile { try? FileManager.default.removeFileIfNecessary(at: destination) }
         
-        let exportTimer: Timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
+        let exportTimer: Timer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { timer in
             YPProgressManager.shared.exportProgress(progress: exportSession.progress)
         }
         exportSession.exportAsynchronously(completionHandler: {
+            YPProgressManager.shared.exportProgress(progress: 1.0)
             exportTimer.invalidate()
             completion(exportSession)
         })

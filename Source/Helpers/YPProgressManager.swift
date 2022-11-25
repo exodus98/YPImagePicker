@@ -45,6 +45,7 @@ class YPProgressManager {
         }
         
         if numberOfImage == numberOfCroppedImage {
+            picker = nil
             _didFinishCropImage?(true)
         }
     }
@@ -59,6 +60,7 @@ class YPProgressManager {
     }
     
     func exportVideo() {
+        picker = nil
         _didFinishExportVideo?(true)
     }
 }

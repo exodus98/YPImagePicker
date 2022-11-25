@@ -118,7 +118,8 @@ open class YPImagePicker: UINavigationController {
                 self?.willProcess(thumbnail: photo.image)
             }
         }
-
+        
+        YPProgressManager.shared.picker = self
         picker.didSelectItems = { [weak self] items in
             // Use Fade transition instead of default push animation
             let transition = CATransition()

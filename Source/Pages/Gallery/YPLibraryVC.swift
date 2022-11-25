@@ -531,6 +531,8 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
                             break
                         }
                     }
+                    
+                    YPProgressManager.shared.calculteImageProgress()
                 }
                 
                 asyncGroup.notify(queue: .main) {
