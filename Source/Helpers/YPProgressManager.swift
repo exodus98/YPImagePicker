@@ -13,6 +13,11 @@ class YPProgressManager {
     var numberOfImage = 0
     var numberOfVideo = 0
     
+    var numberOfCroppedImage = 0
+    var numberOfExportedVideo = 0
+    
+    var picker: YPImagePicker?
+    
     public typealias DidFinishCropImageCompletion = (_ success: Bool) -> Void
     public typealias DidFinishExportVideoCompletion = (_ success: Bool) -> Void
     
@@ -26,23 +31,34 @@ class YPProgressManager {
         _didFinishExportVideo = completion
     }
     
+    func numberOfCropingImages(_ count: Int) {
+        numberOfImage = count
+    }
+    
+    func numberOfExportingVideos(_ count: Int) {
+        numberOfVideo = count
+    }
+    
     func cropImage() {
-        if numberOfImage > 0 {
-            numberOfImage -= 1
+        if numberOfImage != numberOfCroppedImage {
+            numberOfCroppedImage += 1
         }
         
-        if numberOfImage == 0 {
+        if numberOfImage == numberOfCroppedImage {
             _didFinishCropImage?(true)
         }
     }
     
+    func calculteImageProgress() {
+        let progress: Float = numberOfImage == numberOfCroppedImage ? 1.0 : Float(numberOfImage) / Float(numberOfCroppedImage)
+        picker?.progress = progress
+    }
+    
+    func exportProgress(progress: Float) {
+        picker?.progress = progress
+    }
+    
     func exportVideo() {
-        if numberOfVideo > 0 {
-            numberOfVideo -= 1
-        }
-        
-        if numberOfVideo == 0 {
-            _didFinishExportVideo?(true)
-        }
+        _didFinishExportVideo?(true)
     }
 }

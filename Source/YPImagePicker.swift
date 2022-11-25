@@ -15,6 +15,10 @@ public protocol YPImagePickerDelegate: AnyObject {
     func shouldAddToSelection(indexPath: IndexPath, numSelections: Int) -> Bool
 }
 
+public protocol YPImagePickerProgressDelegate {
+    func progressUpdated(progress: Float)
+}
+
 open class YPImagePicker: UINavigationController {
     public typealias DidFinishPickingCompletion = (_ items: [YPMediaItem], _ cancelled: Bool) -> Void
     public typealias DidFinishOnlyThumbCompletion = (_ thumbnailImage: UIImage) -> Void
@@ -85,6 +89,14 @@ open class YPImagePicker: UINavigationController {
     
     private let loadingView = YPLoadingView()
     public let picker: YPPickerVC!
+    public var progressDelegate: YPImagePickerProgressDelegate?
+    public var progress: Float = 0 {
+        didSet {
+            if self.progressDelegate != nil {
+                self.progressDelegate!.progressUpdated(progress: progress)
+            }
+        }
+    }
 
     override open func viewDidLoad() {
         super.viewDidLoad()

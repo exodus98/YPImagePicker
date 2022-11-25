@@ -274,6 +274,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
                             didSave(YPMediaItem.video(v: resultVideo), true)
                             self?.setupRightBarButtonItem()
                         }
+                        YPProgressManager.shared.exportVideo()
                     }
                 case .failed:
                     ypLog("Export of the video failed. Reason: \(String(describing: session.error))")

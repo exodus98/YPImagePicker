@@ -499,6 +499,9 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
                     }
                 }
                 else {
+                    let numberOfAsset = selectedAssets.count
+                    // 크롭 할 이미지 갯수 세팅
+                    YPProgressManager.shared.numberOfCropingImages(numberOfAsset)
                     for asset in selectedAssets {
                         asyncGroup.enter()
                         
@@ -508,6 +511,7 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
                                 let photo = YPMediaPhoto(image: image.resizedImageIfNeeded(),
                                                          exifMeta: exifMeta, asset: asset.asset)
                                 resultMediaItems.append(YPMediaItem.photo(p: photo))
+                                YPProgressManager.shared.cropImage()
                                 asyncGroup.leave()
                             }
                             

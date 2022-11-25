@@ -339,8 +339,8 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
             libraryVC.selectedMedia(photoCallback: { photo in
                 self.didSelectThumb?(YPMediaItem.photo(p: photo))
             }, videoCallback: { video in
-                self.didSelectThumb?(YPMediaItem
-                                        .video(v: video))
+                self.didSelectItems?([YPMediaItem
+                    .video(v: video)])
             }, multipleItemsCallback: { items in
                 if let firstItem = items.first {
                     self.didSelectThumb?(firstItem)
