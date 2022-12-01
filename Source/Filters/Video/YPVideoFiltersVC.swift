@@ -257,36 +257,38 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
             let destinationURL = URL(fileURLWithPath: NSTemporaryDirectory())
                 .appendingUniquePathComponent(pathExtension: YPConfig.video.fileType.fileExtension)
             print("export")
-            _ = trimmedAsset.export(to: destinationURL, isLast: true) { [weak self] session in
-                switch session.status {
-                case .completed:
-                    DispatchQueue.main.async {
-                        if let coverImage = self?.coverImageView.image {
-                            let resultVideo = YPMediaVideo(thumbnail: coverImage,
-                                                           videoURL: destinationURL,
-                                                           asset: self?.inputVideo.asset)
-                            didSave(YPMediaItem.video(v: resultVideo), true)
-                            self?.setupRightBarButtonItem()
-                        } else {
-                            let resultVideo = YPMediaVideo(thumbnail: UIImage(),
-                                                           videoURL: destinationURL,
-                                                           asset: self?.inputVideo.asset)
-                            didSave(YPMediaItem.video(v: resultVideo), true)
-                            self?.setupRightBarButtonItem()
+            UIApplication.shared.beginBackgroundTask {
+                _ = trimmedAsset.export(to: destinationURL, isLast: true) { [weak self] session in
+                    switch session.status {
+                    case .completed:
+                        DispatchQueue.main.async {
+                            if let coverImage = self?.coverImageView.image {
+                                let resultVideo = YPMediaVideo(thumbnail: coverImage,
+                                                               videoURL: destinationURL,
+                                                               asset: self?.inputVideo.asset)
+                                didSave(YPMediaItem.video(v: resultVideo), true)
+                                self?.setupRightBarButtonItem()
+                            } else {
+                                let resultVideo = YPMediaVideo(thumbnail: UIImage(),
+                                                               videoURL: destinationURL,
+                                                               asset: self?.inputVideo.asset)
+                                didSave(YPMediaItem.video(v: resultVideo), true)
+                                self?.setupRightBarButtonItem()
+                            }
+                            YPProgressManager.shared.exportVideo()
                         }
-                        YPProgressManager.shared.exportVideo()
+                    case .failed:
+                        ypLog("Export of the video failed. Reason: \(String(describing: session.error))")
+                        if let videoURL = self?.inputVideo.url {
+                            let resultVideo = YPMediaVideo(thumbnail: UIImage(),
+                                                           videoURL: videoURL,
+                                                           asset: self?.inputVideo.asset)
+                            didSave(YPMediaItem.video(v: resultVideo), false)
+                        }
+                        
+                    default:
+                        ypLog("Export session completed with \(session.status) status. Not handled")
                     }
-                case .failed:
-                    ypLog("Export of the video failed. Reason: \(String(describing: session.error))")
-                    if let videoURL = self?.inputVideo.url {
-                        let resultVideo = YPMediaVideo(thumbnail: UIImage(),
-                                                       videoURL: videoURL,
-                                                       asset: self?.inputVideo.asset)
-                        didSave(YPMediaItem.video(v: resultVideo), false)
-                    }
-                    
-                default:
-                    ypLog("Export session completed with \(session.status) status. Not handled")
                 }
             }
         } catch let error {
