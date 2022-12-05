@@ -21,7 +21,7 @@ public protocol YPImagePickerProgressDelegate {
 
 open class YPImagePicker: UINavigationController {
     public typealias DidFinishPickingCompletion = (_ items: [YPMediaItem], _ cancelled: Bool) -> Void
-    public typealias DidFinishOnlyThumbCompletion = (_ thumbnailImage: UIImage) -> Void
+    public typealias DidFinishOnlyThumbCompletion = (_ thumbnailImage: UIImage, Int) -> Void
     public typealias DidFinishExportCompletion = () -> Void
 
     // MARK: - Public
@@ -79,8 +79,8 @@ open class YPImagePicker: UINavigationController {
         _didFinishPicking?(items, success)
     }
     
-    private func willProcess(thumbnail: UIImage) {
-        _didFinishOnlyThumb?(thumbnail)
+    private func willProcess(thumbnail: UIImage, duration: Int) {
+        _didFinishOnlyThumb?(thumbnail, duration)
     }
     
     private func startExport() {
@@ -115,7 +115,7 @@ open class YPImagePicker: UINavigationController {
             case .video(_):
                 break
             case .photo(let photo):
-                self?.willProcess(thumbnail: photo.image)
+                self?.willProcess(thumbnail: photo.image, duration: 0)
             }
         }
         
@@ -203,8 +203,8 @@ open class YPImagePicker: UINavigationController {
                     let videoFiltersVC = YPVideoFiltersVC.initWith(video: video,
                                                                    isFromSelectionVC: false)
                     if YPConfig.library.backgroundComplession {
-                        videoFiltersVC.willBackgroundProcessing = { [weak self] image in
-                            self?.willProcess(thumbnail: image)
+                        videoFiltersVC.willBackgroundProcessing = { [weak self] image, duration in
+                            self?.willProcess(thumbnail: image, duration: duration)
                         }
                     }
                     // 저장 후 액션(영상 멈추고 피커 나가기)

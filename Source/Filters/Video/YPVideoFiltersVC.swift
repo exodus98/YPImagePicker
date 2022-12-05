@@ -26,7 +26,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
 
     public var inputVideo: YPMediaVideo!
     public var inputAsset: AVAsset { return AVAsset(url: inputVideo.url) }
-    public var willBackgroundProcessing: ((UIImage) -> Void)?
+    public var willBackgroundProcessing: ((UIImage, Int) -> Void)?
     public var didSave: ((YPMediaItem, Bool) -> Void)?
     public var didCancel: (() -> Void)?
 
@@ -233,9 +233,13 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     // MARK: - Actions
     
     @objc private func selectMedia() {
+        guard let startTime = trimmerView.startTime,
+              let endTime = trimmerView.endTime else { return }
+        
+        let videoDuration = CMTimeSubtract(endTime, startTime)
         if let coverImage = self.coverImageView.image,
            let willBackgroundProcessing = self.willBackgroundProcessing {
-            willBackgroundProcessing(coverImage)
+            willBackgroundProcessing(coverImage, Int(videoDuration.value) / Int(videoDuration.timescale))
         }
     }
 
