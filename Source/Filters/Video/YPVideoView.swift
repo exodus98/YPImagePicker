@@ -133,8 +133,11 @@ extension YPVideoView {
     }
     
     public func deallocate() {
-        playerLayer.player = nil
-        playImageView.image = nil
+        DispatchQueue.main.async { [weak self] in
+            // UIImageView.image must be used from main thread only
+            self?.playerLayer.player = nil
+            self?.playImageView.image = nil
+        }
     }
 }
 
