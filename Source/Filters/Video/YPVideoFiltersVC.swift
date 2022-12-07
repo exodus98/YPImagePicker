@@ -243,7 +243,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         }
     }
 
-    @objc public func save() {
+    @objc private func save() {
         guard let didSave = didSave else {
             return ypLog("Don't have saveCallback")
         }
@@ -304,6 +304,14 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     
     @objc private func back() {
         self.navigationController?.popViewController(animated: true)
+    }
+    
+    public func saveAndReturnInfo(completed: @escaping ([URL], [CMTime], [CMTime]) -> Void) {
+        let fileURL = inputVideo.url
+        let startTime = trimmerView.startTime ?? CMTime.zero
+        let endTime = trimmerView.endTime ?? inputAsset.duration
+        save()
+        completed([fileURL], [startTime], [endTime])
     }
 
     // MARK: - Bottom buttons

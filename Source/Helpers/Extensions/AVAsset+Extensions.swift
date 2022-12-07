@@ -11,7 +11,7 @@ import AVFoundation
 // MARK: Trim
 
 extension AVAsset {
-    func assetByTrimming(startTime: CMTime, endTime: CMTime) throws -> AVAsset {
+    public func assetByTrimming(startTime: CMTime, endTime: CMTime) throws -> AVAsset {
         let timeRange = CMTimeRangeFromTimeToTime(start: startTime, end: endTime)
         let composition = AVMutableComposition()
         do {
@@ -42,7 +42,7 @@ extension AVAsset {
     ///   - completion: resulting export closure
     ///   - isLast         : is Last Exporting
     /// - Throws: YPTrimError with description
-    func export(to destination: URL,
+    public func export(to destination: URL,
                 videoComposition: AVVideoComposition? = nil,
                 removeOldFile: Bool = false,
                 isLast: Bool = false,
