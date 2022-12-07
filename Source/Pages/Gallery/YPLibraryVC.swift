@@ -20,7 +20,7 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
     internal var currentlySelectedIndex: Int = 0
     internal let panGestureHelper = PanGestureHelper()
     internal var isInitialized = false
-
+    public var itemCount: Int = 0
     // MARK: - Init
 
     internal override func loadView() {
@@ -619,6 +619,11 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
     
     func pausePlayer() {
         v.assetZoomableView.videoView.pause()
+    }
+    
+    // MARK: Item Count
+    public func getSelectedItemCount() -> Int {
+        selectedItems.count
     }
     
     // MARK: - Deinit

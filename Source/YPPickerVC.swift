@@ -354,6 +354,11 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
         videoVC?.stopCamera()
         cameraVC?.stopCamera()
     }
+    
+    // MARK: library selected count
+    public func getLibararySelectedCount() -> Int {
+        self.libraryVC?.getSelectedItemCount() ?? 0
+    }
 }
 
 extension YPPickerVC: YPLibraryViewDelegate {
