@@ -39,6 +39,14 @@ class YPProgressManager {
         numberOfVideo = count
     }
     
+    func initProgress() {
+        numberOfImage = 0
+        numberOfVideo = 0
+        
+        numberOfCroppedImage = 0
+        numberOfExportedVideo = 0
+    }
+    
     func cropImage() {
         if numberOfImage != numberOfCroppedImage {
             numberOfCroppedImage += 1
@@ -51,7 +59,7 @@ class YPProgressManager {
     }
     
     func calculteImageProgress() {
-        let progress: Float = numberOfImage == numberOfCroppedImage ? 1.0 : Float(numberOfImage) / Float(numberOfCroppedImage)
+        let progress: Float = numberOfImage == numberOfCroppedImage ? 1.0 : Float(numberOfCroppedImage) / Float(numberOfImage)
         picker?.progress = progress
     }
     
