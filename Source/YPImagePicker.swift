@@ -121,6 +121,11 @@ open class YPImagePicker: UINavigationController {
         
         YPProgressManager.shared.picker = self
         picker.didSelectItems = { [weak self] items in
+            if let isSuccess = self?.checkItemsSuccess(items: items), !isSuccess {
+                self?.didSelect(items: items, success: false)
+                return
+            }
+            
             // Use Fade transition instead of default push animation
             let transition = CATransition()
             transition.duration = 0.3
@@ -240,6 +245,25 @@ open class YPImagePicker: UINavigationController {
 //            return
 //        }
 //        self.didSelect(items: items)
+    }
+    
+    // 성공적으로 items를 가져왔는지 여부(중도 처리 실패시 임시 디렉토리를 URL로 하는 sturct를 반환하기 때문에 이를 체크한다.
+    private func checkItemsSuccess(items: [YPMediaItem]) -> Bool {
+        guard let firstItem = items.first,
+              let tempDirectory = URL(string: NSTemporaryDirectory()) else { return false }
+        
+        switch firstItem {
+        case .photo(p: let p):
+            if p.url == tempDirectory {
+                return false
+            }
+        case .video(v: let v):
+            if v.url == tempDirectory {
+                return false
+            }
+        }
+        
+        return true
     }
 }
 

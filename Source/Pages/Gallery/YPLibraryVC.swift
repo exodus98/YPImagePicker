@@ -584,6 +584,11 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
                                 videoCallback(video)
                             } else {
                                 ypLog("Problems with fetching videoURL.")
+                                self.delegate?.libraryViewFinishedLoading()
+                                guard let url = URL(string: NSTemporaryDirectory()) else { return }
+                                let video = YPMediaVideo(thumbnail: thumbnailFromVideoPath(url),
+                                                         videoURL: url, asset: asset)
+                                videoCallback(video)
                             }
                         }
                     })

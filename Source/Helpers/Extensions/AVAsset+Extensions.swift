@@ -48,7 +48,8 @@ extension AVAsset {
                 isLast: Bool = false,
                 completion: @escaping (_ exportSession: AVAssetExportSession) -> Void) -> AVAssetExportSession? {
         // 백단에서 컴프레션 작업을 진행하는 옵션이면서 현재가 마지막이 아니면 무압축 프리셋을 쓰고 아니면 적용된 압축률을 쓰자
-        let presetName = (YPConfig.library.backgroundComplession && !isLast) ? AVAssetExportPresetPassthrough : YPConfig.video.compression
+//        let presetName = (YPConfig.library.backgroundComplession && !isLast) ? AVAssetExportPresetPassthrough : YPConfig.video.compression
+        let presetName = YPConfig.video.compression
         guard let exportSession = AVAssetExportSession(asset: self, presetName: presetName) else {
             ypLog("AVAsset -> Could not create an export session.")
             return nil

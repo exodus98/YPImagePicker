@@ -243,7 +243,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         }
     }
 
-    @objc private func save() {
+    @objc public func save() {
         guard let didSave = didSave else {
             return ypLog("Don't have saveCallback")
         }
