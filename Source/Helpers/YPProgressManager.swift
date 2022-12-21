@@ -7,8 +7,8 @@
 
 import Foundation
 
-class YPProgressManager {
-    static let shared = YPProgressManager()
+public class YPProgressManager {
+    static public let shared = YPProgressManager()
     
     var numberOfImage = 0
     var numberOfVideo = 0
@@ -20,6 +20,7 @@ class YPProgressManager {
     
     public typealias DidFinishCropImageCompletion = (_ success: Bool) -> Void
     public typealias DidFinishExportVideoCompletion = (_ success: Bool) -> Void
+    public var progressDelegate: YPImagePickerProgressDelegate?
     
     private var _didFinishCropImage: DidFinishCropImageCompletion?
     private var _didFinishExportVideo: DidFinishExportVideoCompletion?
@@ -60,11 +61,27 @@ class YPProgressManager {
     
     func calculteImageProgress() {
         let progress: Float = numberOfImage == numberOfCroppedImage ? 1.0 : Float(numberOfCroppedImage) / Float(numberOfImage)
-        picker?.progress = progress
+        if let picker = picker {
+            picker.progress = progress
+            return
+        }
+        
+        if let progressDelegate = progressDelegate {
+            progressDelegate.progressUpdated(progress: progress)
+            return
+        }
     }
     
     func exportProgress(progress: Float) {
-        picker?.progress = progress
+        if let picker = picker {
+            picker.progress = progress
+            return
+        }
+        
+        if let progressDelegate = progressDelegate {
+            progressDelegate.progressUpdated(progress: progress)
+            return
+        }
     }
     
     func exportVideo() {
