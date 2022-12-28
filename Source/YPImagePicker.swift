@@ -136,16 +136,19 @@ open class YPImagePicker: UINavigationController {
             // Multiple items flow
             if items.count > 1 {
                 if YPConfig.library.skipSelectionsGallery {
-                    // 선택한 이미지 데이터 저장해 놓고 처리는 이후에 한다.
-//                    self?.selectedImages = items
-//                    if let firstItem = items.first {
-//                        switch firstItem {
-//                        case .video(_):
-//                            break
-//                        case .photo(let photo):
-//                            self?.willProcess(thumbnail: photo.image)
-//                        }
-//                    }
+                    
+                    if YPConfig.library.backgroundComplession {
+                        // 선택한 이미지 데이터 저장해 놓고 처리는 이후에 한다.
+                        self?.selectedImages = items
+                    } else {
+                        guard let firstItem = items.first else { return }
+                        switch firstItem {
+                        case .video(_):
+                            break
+                        case .photo(let photo):
+                            self?.willProcess(thumbnail: photo.image, duration: 0)
+                        }
+                    }
                     self?.didSelect(items: items)
                     return
                 } else {
