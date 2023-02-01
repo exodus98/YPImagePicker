@@ -138,7 +138,9 @@ public struct YPImagePickerConfiguration {
         YPFilter(name: "Sepia", coreImageFilterName: "CISepiaTone"),
         YPFilter(name: "XRay", coreImageFilterName: "CIXRay")
         ]
-    ///Bongjin custom
+    //Bongjin custom
+    /// Use Fixed Ratio. default is false
+    public var useFixedRatio: Bool = false
     ///Libarary View's Ration. Default is 1.0 . if 0.5, height become width's 50%
     public var libraryViewRatio: CGFloat = 1.0
     /// Migration

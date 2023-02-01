@@ -187,10 +187,17 @@ internal final class YPLibraryView: UIView {
         assetViewContainer.Bottom == line.Top
         line.height(1)
         line.fillHorizontally()
-
-        assetViewContainer.top(0).fillHorizontally().heightRatioWidth(ratio: YPImagePickerConfiguration.shared.libraryViewRatio)
+        
         self.assetViewContainerConstraintTop = assetViewContainer.topConstraint
-        assetZoomableView.fillContainer().heightRatioWidth(ratio: YPImagePickerConfiguration.shared.libraryViewRatio)
+        
+        if YPImagePickerConfiguration.shared.useFixedRatio {
+            assetViewContainer.top(0).fillHorizontally().heightRatioWidth(ratio: YPImagePickerConfiguration.shared.libraryViewRatio)
+            assetZoomableView.fillContainer().heightRatioWidth(ratio: YPImagePickerConfiguration.shared.libraryViewRatio)
+        } else {
+            assetViewContainer.top(0).fillHorizontally().heightEqualsWidth()
+            assetZoomableView.fillContainer().heightEqualsWidth()
+        }
+        
         assetZoomableView.Bottom == collectionView.Top
         assetViewContainer.sendSubviewToBack(assetZoomableView)
 
