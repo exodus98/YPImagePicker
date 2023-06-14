@@ -474,24 +474,29 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
                         
                         switch asset.asset.mediaType {
                         case .image:
-                            self.fetchImageAndCrop(for: asset.asset, withCropRect: asset.cropRect) { image, exifMeta in
-                                let photo = YPMediaPhoto(image: image.resizedImageIfNeeded(),
-                                                         exifMeta: exifMeta, asset: asset.asset)
-                                resultMediaItems.append(YPMediaItem.photo(p: photo))
-                                asyncGroup.leave()
-                            }
-                            
-                        case .video:
-                            self.fetchVideoAndApplySettings(for: asset.asset,
-                                                                 withCropRect: asset.cropRect) { videoURL in
-                                if let videoURL = videoURL {
-                                    let videoItem = YPMediaVideo(thumbnail: thumbnailFromVideoPath(videoURL),
-                                                                 videoURL: videoURL, asset: asset.asset)
-                                    resultMediaItems.append(YPMediaItem.video(v: videoItem))
-                                } else {
-                                    ypLog("Problems with fetching videoURL.")
+                            self.downloadIcloudAssets(asset: asset.asset, type: asset.asset.mediaType) { [weak self] in
+                                guard let self else { return }
+                                self.fetchImageAndCrop(for: asset.asset, withCropRect: asset.cropRect) { image, exifMeta in
+                                    let photo = YPMediaPhoto(image: image.resizedImageIfNeeded(),
+                                                             exifMeta: exifMeta, asset: asset.asset)
+                                    resultMediaItems.append(YPMediaItem.photo(p: photo))
+                                    asyncGroup.leave()
                                 }
-                                asyncGroup.leave()
+                            }
+                        case .video:
+                            self.downloadIcloudAssets(asset: asset.asset, type: asset.asset.mediaType) { [weak self] in
+                                guard let self else { return }
+                                self.fetchVideoAndApplySettings(for: asset.asset,
+                                                                     withCropRect: asset.cropRect) { videoURL in
+                                    if let videoURL = videoURL {
+                                        let videoItem = YPMediaVideo(thumbnail: thumbnailFromVideoPath(videoURL),
+                                                                     videoURL: videoURL, asset: asset.asset)
+                                        resultMediaItems.append(YPMediaItem.video(v: videoItem))
+                                    } else {
+                                        ypLog("Problems with fetching videoURL.")
+                                    }
+                                    asyncGroup.leave()
+                                }
                             }
                         default:
                             break
@@ -509,26 +514,31 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
                         
                         switch asset.asset.mediaType {
                         case .image:
-                            self.fetchImageAndCrop(for: asset.asset, withCropRect: asset.cropRect) { image, exifMeta in
-                                let photo = YPMediaPhoto(image: image.resizedImageIfNeeded(),
-                                                         exifMeta: exifMeta, asset: asset.asset)
-                                resultMediaItems.append(YPMediaItem.photo(p: photo))
-                                YPProgressManager.shared.cropImage()
-                                YPProgressManager.shared.calculteImageProgress()
-                                asyncGroup.leave()
-                            }
-                            
-                        case .video:
-                            self.fetchVideoAndApplySettings(for: asset.asset,
-                                                                 withCropRect: asset.cropRect) { videoURL in
-                                if let videoURL = videoURL {
-                                    let videoItem = YPMediaVideo(thumbnail: thumbnailFromVideoPath(videoURL),
-                                                                 videoURL: videoURL, asset: asset.asset)
-                                    resultMediaItems.append(YPMediaItem.video(v: videoItem))
-                                } else {
-                                    ypLog("Problems with fetching videoURL.")
+                            self.downloadIcloudAssets(asset: asset.asset, type: asset.asset.mediaType) { [weak self] in
+                                guard let self else { return }
+                                self.fetchImageAndCrop(for: asset.asset, withCropRect: asset.cropRect) { image, exifMeta in
+                                    let photo = YPMediaPhoto(image: image.resizedImageIfNeeded(),
+                                                             exifMeta: exifMeta, asset: asset.asset)
+                                    resultMediaItems.append(YPMediaItem.photo(p: photo))
+                                    YPProgressManager.shared.cropImage()
+                                    YPProgressManager.shared.calculteImageProgress()
+                                    asyncGroup.leave()
                                 }
-                                asyncGroup.leave()
+                            }
+                        case .video:
+                            self.downloadIcloudAssets(asset: asset.asset, type: asset.asset.mediaType) { [weak self] in
+                                guard let self else { return }
+                                self.fetchVideoAndApplySettings(for: asset.asset,
+                                                                     withCropRect: asset.cropRect) { videoURL in
+                                    if let videoURL = videoURL {
+                                        let videoItem = YPMediaVideo(thumbnail: thumbnailFromVideoPath(videoURL),
+                                                                     videoURL: videoURL, asset: asset.asset)
+                                        resultMediaItems.append(YPMediaItem.video(v: videoItem))
+                                    } else {
+                                        ypLog("Problems with fetching videoURL.")
+                                    }
+                                    asyncGroup.leave()
+                                }
                             }
                         default:
                             break
@@ -574,32 +584,38 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
                 case .audio, .unknown:
                     return
                 case .video:
-                    // 라이브러리에서 비디오 단독 선택 -> 여기선 압축 하지 말것
-                    self.fetchVideoAndApplySettings(for: asset, callback: { videoURL in
-                        DispatchQueue.main.async {
-                            if let videoURL = videoURL {
-                                self.delegate?.libraryViewFinishedLoading()
-                                let video = YPMediaVideo(thumbnail: thumbnailFromVideoPath(videoURL),
-                                                         videoURL: videoURL, asset: asset)
-                                videoCallback(video)
-                            } else {
-                                ypLog("Problems with fetching videoURL.")
-                                self.delegate?.libraryViewFinishedLoading()
-                                guard let url = URL(string: NSTemporaryDirectory()) else { return }
-                                let video = YPMediaVideo(thumbnail: thumbnailFromVideoPath(url),
-                                                         videoURL: url, asset: asset)
-                                videoCallback(video)
+                    self.downloadIcloudAssets(asset: asset, type: asset.mediaType) { [weak self] in
+                        guard let self else { return }
+                        // 라이브러리에서 비디오 단독 선택 -> 여기선 압축 하지 말것
+                        self.fetchVideoAndApplySettings(for: asset, callback: { videoURL in
+                            DispatchQueue.main.async {
+                                if let videoURL = videoURL {
+                                    self.delegate?.libraryViewFinishedLoading()
+                                    let video = YPMediaVideo(thumbnail: thumbnailFromVideoPath(videoURL),
+                                                             videoURL: videoURL, asset: asset)
+                                    videoCallback(video)
+                                } else {
+                                    ypLog("Problems with fetching videoURL.")
+                                    self.delegate?.libraryViewFinishedLoading()
+                                    guard let url = URL(string: NSTemporaryDirectory()) else { return }
+                                    let video = YPMediaVideo(thumbnail: thumbnailFromVideoPath(url),
+                                                             videoURL: url, asset: asset)
+                                    videoCallback(video)
+                                }
                             }
-                        }
-                    })
+                        })
+                    }
                 case .image:
-                    self.fetchImageAndCrop(for: asset) { image, exifMeta in
-                        DispatchQueue.main.async {
-                            self.delegate?.libraryViewFinishedLoading()
-                            let photo = YPMediaPhoto(image: image.resizedImageIfNeeded(),
-                                                     exifMeta: exifMeta,
-                                                     asset: asset)
-                            photoCallback(photo)
+                    self.downloadIcloudAssets(asset: asset, type: asset.mediaType) { [weak self] in
+                        guard let self else { return }
+                        self.fetchImageAndCrop(for: asset) { image, exifMeta in
+                            DispatchQueue.main.async {
+                                self.delegate?.libraryViewFinishedLoading()
+                                let photo = YPMediaPhoto(image: image.resizedImageIfNeeded(),
+                                                         exifMeta: exifMeta,
+                                                         asset: asset)
+                                photoCallback(photo)
+                            }
                         }
                     }
                 @unknown default:
@@ -609,6 +625,35 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
             }
             // 초기화
             YPProgressManager.shared.initProgress()
+        }
+    }
+    
+    private func downloadIcloudAssets(asset:PHAsset, type: PHAssetMediaType, completed: @escaping () -> Void) {
+        let manager = PHImageManager.default()
+        
+        switch type {
+        case .image:
+            let options = PHImageRequestOptions()
+            options.isNetworkAccessAllowed = true
+            options.version = .current
+            options.deliveryMode = .highQualityFormat
+            
+            manager.requestImageData(for: asset, options: options) { (data, _, _, _) in
+                guard let data else { return }
+                let image = UIImage(data: data)
+                completed()
+            }
+        case .video:
+            let videoOption = PHVideoRequestOptions()
+            videoOption.isNetworkAccessAllowed = true
+            videoOption.version = .current
+            videoOption.deliveryMode = .highQualityFormat
+            
+            manager.requestAVAsset(forVideo: asset, options: videoOption) { (avAsset, audioMix, info) in
+                completed()
+            }
+        case .audio, .unknown:
+            completed()
         }
     }
     
